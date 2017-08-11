@@ -1,0 +1,902 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>幻想乡</title>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="jokewang.top/"/>
+  <updated>2017-08-11T06:58:45.000Z</updated>
+  <id>jokewang.top/</id>
+  
+  <author>
+    <name>王志平</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>iOS异常处理及signal信号</title>
+    <link href="jokewang.top/2017/08/10/iOS%20%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%8F%8Asingal%E4%BF%A1%E5%8F%B7/"/>
+    <id>jokewang.top/2017/08/10/iOS 异常处理及singal信号/</id>
+    <published>2017-08-10T14:53:19.000Z</published>
+    <updated>2017-08-11T06:58:45.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;系统crash&quot;&gt;&lt;a href=&quot;#系统crash&quot; class=&quot;headerlink&quot; title=&quot;系统crash&quot;&gt;&lt;/a&gt;系统crash&lt;/h1&gt;&lt;p&gt;不讲2333 什么时候想起来再填充&lt;/p&gt;
+&lt;h1 id=&quot;singal信号&quot;&gt;&lt;a href=&quot;#singal信号&quot; class=&quot;headerlink&quot; title=&quot;singal信号&quot;&gt;&lt;/a&gt;singal信号&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;软中断信号（signal，又简称为信号）用来通知进程发生了异步事件。进程之间可以互相通过系统调用kill发送软中断信号。内核也可以因为内部事件而给进程发送信号，通知进程发生了某个事件。注意，信号只是用来通知某进程发生了什么事件，并不给该进程传递任何数据。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;下面是一些信号说明，添加的备注是我的理解，未添加的表示没遇到过&lt;/p&gt;
+&lt;h2 id=&quot;1-SIGHUP&quot;&gt;&lt;a href=&quot;#1-SIGHUP&quot; class=&quot;headerlink&quot; title=&quot;1) SIGHUP&quot;&gt;&lt;/a&gt;1) SIGHUP&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;本信号在用户终端连接(正常或非正常)结束时发出, 通常是在终端的控制进程结束时, 通知同一session内的各个作业, 这时它们与控制终端不再关联。&lt;br&gt;登录Linux时，系统会分配给登录用户一个终端(Session)。在这个终端运行的所有程序，包括前台进程组和后台进程组，一般都属于这个 Session。当用户退出Linux登录时，前台进程组和后台有对终端输出的进程将会收到SIGHUP信号。这个信号的默认操作为终止进程，因此前台进 程组和后台有终端输出的进程就会中止。不过可以捕获这个信号，比如wget能捕获SIGHUP信号，并忽略它，这样就算退出了Linux登录， wget也 能继续下载。&lt;br&gt;此外，对于与终端脱离关系的守护进程，这个信号用于通知它重新读取配置文件。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;2-SIGINT&quot;&gt;&lt;a href=&quot;#2-SIGINT&quot; class=&quot;headerlink&quot; title=&quot;2) SIGINT&quot;&gt;&lt;/a&gt;2) SIGINT&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;程序终止(interrupt)信号, 在用户键入INTR字符(通常是Ctrl-C)时发出，用于通知前台进程组终止进程。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;貌似手机上发不出这个信号。&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h2 id=&quot;3-SIGQUIT&quot;&gt;&lt;a href=&quot;#3-SIGQUIT&quot; class=&quot;headerlink&quot; title=&quot;3) SIGQUIT&quot;&gt;&lt;/a&gt;3) SIGQUIT&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;和SIGINT类似, 但由QUIT字符(通常是Ctrl-)来控制. 进程在因收到SIGQUIT退出时会产生core文件, 在这个意义上类似于一个程序错误信号。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;貌似也收不到&lt;/p&gt;
+&lt;h2 id=&quot;4-SIGILL&quot;&gt;&lt;a href=&quot;#4-SIGILL&quot; class=&quot;headerlink&quot; title=&quot;4) SIGILL&quot;&gt;&lt;/a&gt;4) SIGILL&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;执行了非法指令. 通常是因为可执行文件本身出现错误, 或者试图执行数据段. 堆栈溢出时也有可能产生这个信号。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;不管在任何情况下得杀死进程的信号,iOS 禁止app内kill进程，不用操心&lt;/p&gt;
+&lt;h2 id=&quot;5-SIGTRAP&quot;&gt;&lt;a href=&quot;#5-SIGTRAP&quot; class=&quot;headerlink&quot; title=&quot;5) SIGTRAP&quot;&gt;&lt;/a&gt;5) SIGTRAP&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;由断点指令或其它trap指令产生. 由debugger使用。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;release环境一定不可能是断点，所以就是trap指令了，比如调用下面方法就会发出这个信号&lt;/p&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;NSException&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;+ (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)raise:(&lt;span class=&quot;built_in&quot;&gt;NSExceptionName&lt;/span&gt;)name format:(&lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; *)format, ... &lt;span class=&quot;built_in&quot;&gt;NS_FORMAT_FUNCTION&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;3&lt;/span&gt;);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;+ (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)raise:(&lt;span class=&quot;built_in&quot;&gt;NSExceptionName&lt;/span&gt;)name format:(&lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; *)format arguments:(va_list)argList &lt;span class=&quot;built_in&quot;&gt;NS_FORMAT_FUNCTION&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;);&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;6-SIGABRT&quot;&gt;&lt;a href=&quot;#6-SIGABRT&quot; class=&quot;headerlink&quot; title=&quot;6) SIGABRT&quot;&gt;&lt;/a&gt;6) SIGABRT&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;调用abort函数生成的信号。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;iOS中一般是手动调用或者数组越界。FMDB中有这个函数&lt;/p&gt;
+&lt;h2 id=&quot;7-SIGBUS&quot;&gt;&lt;a href=&quot;#7-SIGBUS&quot; class=&quot;headerlink&quot; title=&quot;7) SIGBUS&quot;&gt;&lt;/a&gt;7) SIGBUS&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;非法地址, 包括内存地址对齐(alignment)出错。比如访问一个四个字长的整数, 但其地址不是4的倍数。它与SIGSEGV的区别在于后者是由于对合法存储地址的非法访问触发的(如访问不属于自己存储空间或只读存储空间)。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;比如多线程读写一个对象，代理用assign&lt;br&gt;解决此类问题需要有一定的汇编知识,&lt;a href=&quot;http://www.jianshu.com/p/544464a5e630&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;iOS汇编教程：理解ARM&lt;/a&gt;介绍了常用的汇编代码。&lt;/p&gt;
+&lt;p&gt;另外&lt;a href=&quot;https://my.oschina.net/bugly/blog/919482&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;教你 Debug 的正确姿势——记一次 CoreMotion 的 Crash&lt;/a&gt;手Q一个小哥写的关于SIGBUS的文章非常棒。对于5，7，11这些都可以用这篇文章中提供的方法来找到&lt;/p&gt;
+&lt;h2 id=&quot;8-SIGFPE&quot;&gt;&lt;a href=&quot;#8-SIGFPE&quot; class=&quot;headerlink&quot; title=&quot;8) SIGFPE&quot;&gt;&lt;/a&gt;8) SIGFPE&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;在发生致命的算术运算错误时发出. 不仅包括浮点运算错误, 还包括溢出及除数为0等其它所有的算术的错误。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;9-SIGKILL&quot;&gt;&lt;a href=&quot;#9-SIGKILL&quot; class=&quot;headerlink&quot; title=&quot;9) SIGKILL&quot;&gt;&lt;/a&gt;9) SIGKILL&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;用来立即结束程序的运行. 本信号不能被阻塞、处理和忽略。如果管理员发现某个进程终止不了，可尝试发送这个信号。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;用户或者系统删除后台进程会发送此信号，需要注意系统杀死后台的进程的情况并非只有内存使用过多，CPU占用大也会被杀死&lt;/p&gt;
+&lt;h2 id=&quot;10-SIGUSR1&quot;&gt;&lt;a href=&quot;#10-SIGUSR1&quot; class=&quot;headerlink&quot; title=&quot;10) SIGUSR1&quot;&gt;&lt;/a&gt;10) SIGUSR1&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;没在POSIX.1中列出，而在SUSv2列出 同7 SIGBUS&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;11-SIGSEGV&quot;&gt;&lt;a href=&quot;#11-SIGSEGV&quot; class=&quot;headerlink&quot; title=&quot;11) SIGSEGV&quot;&gt;&lt;/a&gt;11) SIGSEGV&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;试图访问未分配给自己的内存, 或试图往没有写权限的内存地址写数据.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;比如空指针，未初始化指针，栈溢出等；&lt;/p&gt;
+&lt;h2 id=&quot;12-SIGUSR2&quot;&gt;&lt;a href=&quot;#12-SIGUSR2&quot; class=&quot;headerlink&quot; title=&quot;12) SIGUSR2&quot;&gt;&lt;/a&gt;12) SIGUSR2&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;没在POSIX.1中列出，而在SUSv2列出 无效的系统调用 (SVID) 同SIGSYS&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;13-SIGPIPE&quot;&gt;&lt;a href=&quot;#13-SIGPIPE&quot; class=&quot;headerlink&quot; title=&quot;13) SIGPIPE&quot;&gt;&lt;/a&gt;13) SIGPIPE&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;管道破裂。这个信号通常在进程间通信产生，比如采用FIFO(管道)通信的两个进程，读管道没打开或者意外终止就往管道写，写进程会收到SIGPIPE信号。此外用Socket通信的两个进程，写进程在写Socket的时候，读进程已经终止。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;14-SIGALRM&quot;&gt;&lt;a href=&quot;#14-SIGALRM&quot; class=&quot;headerlink&quot; title=&quot;14) SIGALRM&quot;&gt;&lt;/a&gt;14) SIGALRM&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;时钟定时信号, 计算的是实际的时间或时钟时间. alarm函数使用该信号.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;剩下的基本都不会遇到&lt;/p&gt;
+&lt;h1 id=&quot;Exception-Code&quot;&gt;&lt;a href=&quot;#Exception-Code&quot; class=&quot;headerlink&quot; title=&quot;Exception Code&quot;&gt;&lt;/a&gt;Exception Code&lt;/h1&gt;&lt;p&gt;有一些值代表固定的意思比如下面这些&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;值&lt;/th&gt;
+&lt;th&gt;解释&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;0x8badf00d&lt;/td&gt;
+&lt;td&gt;在启动、终⽌止应⽤用或响应系统事件花费过⻓长时间,意为“ate bad food”。    &lt;br&gt; &lt;br&gt;对于此类Crash，我们应该去审视自己App初始化时做的事情是否正确，是否在主线程请求了网络，或者其他耗时的事情卡住了正常初始化流程。通常系统允许一个App从启动到可以相应用户事件的时间最多为5S，如果超过了5S，App就会被系统终止掉。在Launch，resume，suspend，quit时都会有相应的时间要求。在Highlight Thread里面我们可以看到被终止时调用到的位置，xxxAppDelegate加上行&lt;br&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0xdeadfa11&lt;/td&gt;
+&lt;td&gt;⽤用户强制退出,意为“dead fall”。(系统⽆无响应时,⽤用户按电源开关和HOME)&lt;br&gt;&lt;br&gt;这个强制退出跟我们平时所说的kill掉后台任务操作还不太一样，通常在程序bug造成系统无法响应时可以采用长按电源键，当屏幕出现关机确认画面时按下Home键即可关闭当前程序。&lt;br&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0xbaaaaaad&lt;/td&gt;
+&lt;td&gt;⽤用户按住Home键和⾳音量键,获取当前内存状态,不代表崩溃&lt;br&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0xbad22222&lt;/td&gt;
+&lt;td&gt;VoIP应⽤用因为恢复得太频繁导致crash&lt;br&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0xc00010ff&lt;/td&gt;
+&lt;td&gt;因为太烫了被干掉,意为“cool off”&lt;br&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;0xdead10cc&lt;/td&gt;
+&lt;td&gt;因为在后台时仍然占据系统资源(⽐比如通讯录)被干掉,意为“dead lock”&lt;br&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;参考文档：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.iosxxx.com/blog/2015-08-29-iosyi-chang-bu-huo.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;iOS异常捕获&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.cocoachina.com/ios/20150122/10991.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;iOS Crash文件的解析&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.jianshu.com/p/5c0e1768ba54&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;iOS中常见的crash信号处理&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://satanwoo.github.io/2017/01/07/DispatchGroupCrash/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;hiOS疑难问题排查之深入探究dispatch_group crash&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://satanwoo.github.io/2016/10/23/multithread-dangling-pointer/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;浅谈一种解决多线程野指针的新思路&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://dev.qq.com/topic/59150e72142eee2b6b97359a&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;手把手教你如何分析 iOS 系统栈 crash&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://people.cs.pitt.edu/~alanjawi/cs449/code/shell/UnixSignals.htm&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Unix Signals&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;系统crash&quot;&gt;&lt;a href=&quot;#系统crash&quot; class=&quot;headerlink&quot; title=&quot;系统crash&quot;&gt;&lt;/a&gt;系统crash&lt;/h1&gt;&lt;p&gt;不讲2333 什么时候想起来再填充&lt;/p&gt;
+&lt;h1 id=&quot;singal信号&quot;&gt;&lt;a href=&quot;#singal信号&quot; class=&quot;headerlink&quot; title=&quot;singal信号&quot;&gt;&lt;/a&gt;singal信号&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;软中断信号（signal，又简称为信号）用来通知进程发生了异步事件。进程之间可以互相通过系统调用kill发送软中断信号。内核也可以因为内部事件而给进程发送信号，通知进程发生了某个事件。注意，信号只是用来通知某进程发生了什么事件，并不给该进程传递任何数据。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;下面是一些信号说明，添加的备注是我的理解，未添加的表示没遇到过&lt;/p&gt;
+&lt;h2 id=&quot;1-SIGHUP&quot;&gt;&lt;a href=&quot;#1-SIGHUP&quot; class=&quot;headerlink&quot; title=&quot;1) SIGHUP&quot;&gt;&lt;/a&gt;1) SIGHUP&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;本信号在用户终端连接(正常或非正常)结束时发出, 通常是在终端的控制进程结束时, 通知同一session内的各个作业, 这时它们与控制终端不再关联。&lt;br&gt;登录Linux时，系统会分配给登录用户一个终端(Session)。在这个终端运行的所有程序，包括前台进程组和后台进程组，一般都属于这个 Session。当用户退出Linux登录时，前台进程组和后台有对终端输出的进程将会收到SIGHUP信号。这个信号的默认操作为终止进程，因此前台进 程组和后台有终端输出的进程就会中止。不过可以捕获这个信号，比如wget能捕获SIGHUP信号，并忽略它，这样就算退出了Linux登录， wget也 能继续下载。&lt;br&gt;此外，对于与终端脱离关系的守护进程，这个信号用于通知它重新读取配置文件。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;2-SIGINT&quot;&gt;&lt;a href=&quot;#2-SIGINT&quot; class=&quot;headerlink&quot; title=&quot;2) SIGINT&quot;&gt;&lt;/a&gt;2) SIGINT&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;程序终止(interrupt)信号, 在用户键入INTR字符(通常是Ctrl-C)时发出，用于通知前台进程组终止进程。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;貌似手机上发不出这个信号。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="iOS" scheme="jokewang.top/categories/iOS/"/>
+    
+    
+      <category term="基础知识" scheme="jokewang.top/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Xcode自定义waring</title>
+    <link href="jokewang.top/2017/05/26/Xcode%E8%87%AA%E5%AE%9A%E4%B9%89waring/"/>
+    <id>jokewang.top/2017/05/26/Xcode自定义waring/</id>
+    <published>2017-05-26T10:55:01.000Z</published>
+    <updated>2017-05-27T09:16:22.000Z</updated>
+    
+    <content type="html">&lt;p&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/xcode%E8%87%AA%E5%AE%9A%E4%B9%89%E8%84%9A%E6%9C%AC.png&quot; alt=&quot;添加方法&quot;&gt;&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;KEYWORDS=&amp;quot;\/\/TODO|\/\/FIXME|\/\/\?\?\?:|\/\/\!\!\!:&amp;quot;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	find &amp;quot;$&amp;#123;SRCROOT&amp;#125;&amp;quot; \( -name &amp;quot;*.h&amp;quot; -or -name &amp;quot;*.m&amp;quot; -or -name &amp;quot;*.swift&amp;quot; \) -print0 | \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	xargs -0 egrep --with-filename --line-number --only-matching &amp;quot;($KEYWORDS).*\$&amp;quot; | \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	perl -p -e &amp;quot;s/($KEYWORDS)/ warning: \$1/&amp;quot;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/xcode%E8%87%AA%E5%AE%9A%E4%B9%89%E8%84%9A%E6%9C%AC.png&quot; alt=&quot;添加方法&quot;&gt;&lt;/p&gt;
+&lt;figure class=&quot;hi
+    
+    </summary>
+    
+      <category term="iOS" scheme="jokewang.top/categories/iOS/"/>
+    
+    
+      <category term="奇巧淫技" scheme="jokewang.top/tags/%E5%A5%87%E5%B7%A7%E6%B7%AB%E6%8A%80/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>京阿尼之诗</title>
+    <link href="jokewang.top/2017/05/02/%E4%BA%AC%E9%98%BF%E5%B0%BC%E4%B9%8B%E8%AF%97/"/>
+    <id>jokewang.top/2017/05/02/京阿尼之诗/</id>
+    <published>2017-05-02T05:47:20.000Z</published>
+    <updated>2017-05-02T05:47:38.000Z</updated>
+    
+    <content type="html">&lt;blockquote&gt;
+&lt;p&gt;一口冰菓一夏天，一首轻音一时间&lt;br&gt;境界彼方几何远？春夏冬来泪又迁&lt;br&gt;青春无悔中二恋，幸运之星伴身边&lt;br&gt;喜悦岂无无彩限？欢快畅游游乐园&lt;br&gt;最爱日常打闹喜，小林玉子乐更添&lt;br&gt;泳池中来绽光彩，永恒中去赏花园&lt;br&gt;爱之物语声之形，全金校园乐趣全&lt;br&gt;身在春日何忧郁？ 吹响号角向明天&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;真好～&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;一口冰菓一夏天，一首轻音一时间&lt;br&gt;境界彼方几何远？春夏冬来泪又迁&lt;br&gt;青春无悔中二恋，幸运之星伴身边&lt;br&gt;喜悦岂无无彩限？欢快畅游游乐园&lt;br&gt;最爱日常打闹喜，小林玉子乐更添&lt;br&gt;泳池中来绽光彩，永恒中去赏花园&lt;br&gt;爱之物语声之形，全金
+    
+    </summary>
+    
+      <category term="生活" scheme="jokewang.top/categories/life/"/>
+    
+    
+      <category term="乱七八糟" scheme="jokewang.top/tags/%E4%B9%B1%E4%B8%83%E5%85%AB%E7%B3%9F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>iOS8中那些我可能用到的API</title>
+    <link href="jokewang.top/2017/02/16/iOS8%E4%B8%AD%E9%82%A3%E4%BA%9B%E6%88%91%E5%8F%AF%E8%83%BD%E7%94%A8%E5%88%B0%E7%9A%84API/"/>
+    <id>jokewang.top/2017/02/16/iOS8中那些我可能用到的API/</id>
+    <published>2017-02-16T05:42:32.000Z</published>
+    <updated>2017-02-16T05:57:46.000Z</updated>
+    
+    <content type="html">&lt;p&gt;公司新的项目是以iOS8为最低支持版本的，所以写一份备忘录记录一下那些iOS8中更好用且常用的API&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;let yosemite = NSOperatingSystemVersion(majorVersion: 10, minorVersion: 10, patchVersion: 0)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;NSProcessInfo().isOperatingSystemAtLeastVersion(yosemite) // false&lt;br&gt;新的判断版本的方法&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;localizedCaseInsensitiveContainsString
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;不区分大小写匹配字符串是否包含相比以前rangOfstring要简单&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;wkwebview
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;iOS8可以考虑开始使用wkwebView来代替UIWebview&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;NSQualityOfService
+&lt;/code&gt;&lt;/pre&gt;&lt;blockquote&gt;
+&lt;p&gt;线程这个概念已经在苹果的框架中被系统性的忽略。这对于开发者而言是件好事。&lt;br&gt;沿着这个趋势，NSOperation中新的qualityOfService的属性取代了原来的threadPriority。通过它可以推迟那些不重要的任务，从而让用户体验更加流畅。&lt;br&gt;NSQualityOfService枚举定义了以下值：&lt;br&gt;UserInteractive：和图形处理相关的任务，比如滚动和动画。&lt;br&gt;UserInitiated：用户请求的任务，但是不需要精确到毫秒级。例如，如果用户请求打开电子邮件App来查看邮件。&lt;br&gt;Utility：周期性的用户请求任务。比如，电子邮件App可能被设置成每五分钟自动检查新邮件。但是在系统资源极度匮乏的时候，将这个周期性的任务推迟几分钟也没有大碍。&lt;br&gt;Background：后台任务，用户可能并不会察觉对这些任务。比如，电子邮件App对邮件进行引索以方便搜索。&lt;br&gt;Quality of Service将在iOS 8和OS X Yosemite中广泛的应用，所以留意所有能利用它们的机会。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;pre&gt;&lt;code&gt;LocalAuthentication
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;TouchID的类，指纹解锁还是相当方便的 配合keychian 一个指纹处处登陆。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://developer.apple.com/library/content/releasenotes/General/iOS80APIDiffs/index.html#//apple_ref/doc/uid/TP40014455&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;iOS7到iOS8变化的API&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;公司新的项目是以iOS8为最低支持版本的，所以写一份备忘录记录一下那些iOS8中更好用且常用的API&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;let yosemite = NSOperatingSystemVersion(majorVersion: 10, minorVersion:
+    
+    </summary>
+    
+      <category term="iOS" scheme="jokewang.top/categories/iOS/"/>
+    
+    
+      <category term="基础知识" scheme="jokewang.top/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>控制器push过程中的生命周期</title>
+    <link href="jokewang.top/2016/12/05/%E6%8E%A7%E5%88%B6%E5%99%A8push%E8%BF%87%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"/>
+    <id>jokewang.top/2016/12/05/控制器push过程中的生命周期/</id>
+    <published>2016-12-05T01:38:46.000Z</published>
+    <updated>2016-12-05T01:45:23.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;A-展现的时候&quot;&gt;&lt;a href=&quot;#A-展现的时候&quot; class=&quot;headerlink&quot; title=&quot;A 展现的时候&quot;&gt;&lt;/a&gt;A 展现的时候&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;A viewDidLoad&lt;/li&gt;
+&lt;li&gt;A viewWillAppear&lt;/li&gt;
+&lt;li&gt;A viewWillLayoutSubviews&lt;/li&gt;
+&lt;li&gt;A viewDidLayoutSubviews&lt;/li&gt;
+&lt;li&gt;A viewDidAppear&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;A-push-到-B-的时候&quot;&gt;&lt;a href=&quot;#A-push-到-B-的时候&quot; class=&quot;headerlink&quot; title=&quot;A push 到 B 的时候&quot;&gt;&lt;/a&gt;A push 到 B 的时候&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;A viewWillDisappear&lt;/li&gt;
+&lt;li&gt;B viewDidLoad&lt;/li&gt;
+&lt;li&gt;B viewWillAppear&lt;/li&gt;
+&lt;li&gt;B viewWillLayoutSubviews&lt;/li&gt;
+&lt;li&gt;B viewDidLayoutSubviews&lt;/li&gt;
+&lt;li&gt;A viewDidDisappear&lt;/li&gt;
+&lt;li&gt;B viewDidAppear&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;B-pop-回-A-的时候&quot;&gt;&lt;a href=&quot;#B-pop-回-A-的时候&quot; class=&quot;headerlink&quot; title=&quot;B pop 回 A 的时候&quot;&gt;&lt;/a&gt;B pop 回 A 的时候&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;B viewWillDisappear&lt;/li&gt;
+&lt;li&gt;A viewWillAppear&lt;/li&gt;
+&lt;li&gt;B viewDidDisappear&lt;/li&gt;
+&lt;li&gt;A viewDidAppear&lt;/li&gt;
+&lt;li&gt;B dealloc&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;A-展现的时候&quot;&gt;&lt;a href=&quot;#A-展现的时候&quot; class=&quot;headerlink&quot; title=&quot;A 展现的时候&quot;&gt;&lt;/a&gt;A 展现的时候&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;A viewDidLoad&lt;/li&gt;
+&lt;li&gt;A viewWillAppear&lt;/li&gt;
+    
+    </summary>
+    
+      <category term="iOS" scheme="jokewang.top/categories/iOS/"/>
+    
+    
+      <category term="基础知识" scheme="jokewang.top/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>NSDataDetector</title>
+    <link href="jokewang.top/2016/11/29/NSData%E2%80%8BDetector/"/>
+    <id>jokewang.top/2016/11/29/NSData​Detector/</id>
+    <published>2016-11-29T03:55:47.000Z</published>
+    <updated>2016-11-29T03:56:03.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;初识&quot;&gt;&lt;a href=&quot;#初识&quot; class=&quot;headerlink&quot; title=&quot;初识&quot;&gt;&lt;/a&gt;初识&lt;/h1&gt;&lt;p&gt;NSDataDetector 是 NSRegularExpression 的子类，而不只是一个 ICU 的模式匹配，它可以检测半结构化的信息：日期，地址，链接，电话号码和交通信息。&lt;/p&gt;
+&lt;p&gt;NSDataDetector 对象用一个需要检查的信息的位掩码类型来初始化，然后传入一个需要匹配的字符串。像 NSRegularExpression 一样，在一个字符串中找到的每个匹配是用 NSTextCheckingResult 来表示的，它有诸如字符范围和匹配类型的详细信息。然而，NSDataDetector 的特定类型也可以包含元数据，如地址或日期组件。&lt;/p&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;NSError&lt;/span&gt; *error = &lt;span class=&quot;literal&quot;&gt;nil&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;NSDataDetector&lt;/span&gt; *detector = [&lt;span class=&quot;built_in&quot;&gt;NSDataDetector&lt;/span&gt; dataDetectorWithTypes:&lt;span class=&quot;built_in&quot;&gt;NSTextCheckingTypeAddress&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                                                        | &lt;span class=&quot;built_in&quot;&gt;NSTextCheckingTypePhoneNumber&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                                                           error:&amp;amp;error];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; *string = &lt;span class=&quot;string&quot;&gt;@&quot;123 Main St. / (555) 555-5555&quot;&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;[detector enumerateMatchesInString:string&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                           options:kNilOptions&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                             range:&lt;span class=&quot;built_in&quot;&gt;NSMakeRange&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;, [string length])&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                        usingBlock:&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;^(&lt;span class=&quot;built_in&quot;&gt;NSTextCheckingResult&lt;/span&gt; *result, &lt;span class=&quot;built_in&quot;&gt;NSMatchingFlags&lt;/span&gt; flags, &lt;span class=&quot;built_in&quot;&gt;BOOL&lt;/span&gt; *stop) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;built_in&quot;&gt;NSLog&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;@&quot;Match: %@&quot;&lt;/span&gt;, result);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;];&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;blockquote&gt;
+&lt;p&gt;当初始化 NSDataDetector 的时候，确保只指定你感兴趣的类型。每当增加一个需要检查的类型，随着而来的是不小的性能损失为代价。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h1 id=&quot;数据检测器匹配类型&quot;&gt;&lt;a href=&quot;#数据检测器匹配类型&quot; class=&quot;headerlink&quot; title=&quot;数据检测器匹配类型&quot;&gt;&lt;/a&gt;数据检测器匹配类型&lt;/h1&gt;&lt;p&gt;下面是 NSDataDetector 的各种 NSTextCheckingTypes 匹配，及其相关属性表：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;类型&lt;/th&gt;
+&lt;th&gt;属性&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;NSTextCheckingTypeDate&lt;/td&gt;
+&lt;td&gt;&lt;ul&gt;&lt;li&gt; dated &lt;/li&gt; &lt;li&gt; uration &lt;/li&gt; &lt;li&gt; timeZone &lt;/li&gt; &lt;/ul&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;NSTextCheckingTypeAddress&lt;/td&gt;
+&lt;td&gt;&lt;ul&gt;&lt;li&gt; addressComponents* &lt;/li&gt; &lt;li&gt; NSTextCheckingNameKey &lt;/li&gt; &lt;li&gt; NSTextCheckingJobTitleKey &lt;/li&gt; &lt;li&gt; NSTextCheckingOrganizationKey &lt;/li&gt; &lt;li&gt; NSTextCheckingStreetKey &lt;/li&gt; &lt;li&gt; NSTextCheckingCityKey &lt;/li&gt; &lt;li&gt; NSTextCheckingStateKey &lt;/li&gt; &lt;li&gt; NSTextCheckingZIPKey &lt;/li&gt; &lt;li&gt; NSTextCheckingCountryKey &lt;/li&gt; &lt;li&gt; NSTextCheckingPhoneKey &lt;/li&gt;&lt;/ul&gt; &lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;NSTextCheckingTypeLink&lt;/td&gt;
+&lt;td&gt;&lt;ul&gt;&lt;li&gt; url &lt;/li&gt;&lt;/ul&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;NSTextCheckingTypePhoneNumber&lt;/td&gt;
+&lt;td&gt;&lt;ul&gt;&lt;li&gt; phoneNumber &lt;/li&gt;&lt;/ul&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;NSTextCheckingTypeTransitInformation&lt;/td&gt;
+&lt;td&gt;&lt;ul&gt;&lt;li&gt; components* &lt;/li&gt; &lt;li&gt; NSTextCheckingAirlineKey &lt;/li&gt; &lt;li&gt; NSTextCheckingFlightKey &lt;/li&gt;&lt;/ul&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;*号  NSDictionary properties have values at defined keys.&lt;/p&gt;
+&lt;h1 id=&quot;在-iOS-上做数据检测&quot;&gt;&lt;a href=&quot;#在-iOS-上做数据检测&quot; class=&quot;headerlink&quot; title=&quot;在 iOS 上做数据检测&quot;&gt;&lt;/a&gt;在 iOS 上做数据检测&lt;/h1&gt;&lt;p&gt;有点混乱的是，iOS 也定义了 UIDataDetectorTypes。这些位掩码的值可以设置成一个 UITextView 的 dataDetectorTypes，来自动检测显示的文本。&lt;/p&gt;
+&lt;p&gt;UIDataDetectorTypes 和 NSTextCheckingTypes 相同的那些枚举常量其实是不同的（如 UIDataDetectorTypePhoneNumber 和 NSTextCheckingTypePhoneNumber），他们的整数值并不一样，而且一个中的所有值也并不能在另外一个里面都能找到。可以用以下方法把 UIDataDetectorTypes 转换为 NSTextCheckingTypes：&lt;/p&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;inline&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;NSTextCheckingType&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;NSTextCheckingTypesFromUIDataDetectorTypes&lt;/span&gt;(&lt;span class=&quot;built_in&quot;&gt;UIDataDetectorTypes&lt;/span&gt; dataDetectorType) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSTextCheckingType&lt;/span&gt; textCheckingType = &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (dataDetectorType &amp;amp; &lt;span class=&quot;built_in&quot;&gt;UIDataDetectorTypeAddress&lt;/span&gt;) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        textCheckingType |= &lt;span class=&quot;built_in&quot;&gt;NSTextCheckingTypeAddress&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (dataDetectorType &amp;amp; &lt;span class=&quot;built_in&quot;&gt;UIDataDetectorTypeCalendarEvent&lt;/span&gt;) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        textCheckingType |= &lt;span class=&quot;built_in&quot;&gt;NSTextCheckingTypeDate&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (dataDetectorType &amp;amp; &lt;span class=&quot;built_in&quot;&gt;UIDataDetectorTypeLink&lt;/span&gt;) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        textCheckingType |= &lt;span class=&quot;built_in&quot;&gt;NSTextCheckingTypeLink&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (dataDetectorType &amp;amp; &lt;span class=&quot;built_in&quot;&gt;UIDataDetectorTypePhoneNumber&lt;/span&gt;) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        textCheckingType |= &lt;span class=&quot;built_in&quot;&gt;NSTextCheckingTypePhoneNumber&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; textCheckingType;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;参考：&lt;a href=&quot;http://nshipster.com/nsdatadetector/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;http://nshipster.com/nsdatadetector/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;UILabel的使用  &lt;a href=&quot;https://github.com/TTTAttributedLabel/TTTAttributedLabel&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;TTTAttributedLabel&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;初识&quot;&gt;&lt;a href=&quot;#初识&quot; class=&quot;headerlink&quot; title=&quot;初识&quot;&gt;&lt;/a&gt;初识&lt;/h1&gt;&lt;p&gt;NSDataDetector 是 NSRegularExpression 的子类，而不只是一个 ICU 的模式匹配，它可以检测半结构化的信息：日期，地址，链接，电话号码和交通信息。&lt;/p&gt;
+&lt;p&gt;NSDataDetector 对象用一个需要检查的信息的位掩码类型来初始化，然后传入一个需要匹配的字符串。像 NSRegularExpression 一样，在一个字符串中找到的每个匹配是用 NSTextCheckingResult 来表示的，它有诸如字符范围和匹配类型的详细信息。然而，NSDataDetector 的特定类型也可以包含元数据，如地址或日期组件。&lt;/p&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;NSError&lt;/span&gt; *error = &lt;span class=&quot;literal&quot;&gt;nil&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;NSDataDetector&lt;/span&gt; *detector = [&lt;span class=&quot;built_in&quot;&gt;NSDataDetector&lt;/span&gt; dataDetectorWithTypes:&lt;span class=&quot;built_in&quot;&gt;NSTextCheckingTypeAddress&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                                                        | &lt;span class=&quot;built_in&quot;&gt;NSTextCheckingTypePhoneNumber&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                                                           error:&amp;amp;error];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; *string = &lt;span class=&quot;string&quot;&gt;@&quot;123 Main St. / (555) 555-5555&quot;&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;[detector enumerateMatchesInString:string&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                           options:kNilOptions&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                             range:&lt;span class=&quot;built_in&quot;&gt;NSMakeRange&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;, [string length])&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                        usingBlock:&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;^(&lt;span class=&quot;built_in&quot;&gt;NSTextCheckingResult&lt;/span&gt; *result, &lt;span class=&quot;built_in&quot;&gt;NSMatchingFlags&lt;/span&gt; flags, &lt;span class=&quot;built_in&quot;&gt;BOOL&lt;/span&gt; *stop) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;built_in&quot;&gt;NSLog&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;@&quot;Match: %@&quot;&lt;/span&gt;, result);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;];&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;blockquote&gt;
+&lt;p&gt;当初始化 NSDataDetector 的时候，确保只指定你感兴趣的类型。每当增加一个需要检查的类型，随着而来的是不小的性能损失为代价。&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="iOS" scheme="jokewang.top/categories/iOS/"/>
+    
+    
+      <category term="基础知识" scheme="jokewang.top/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>汇编基础知识</title>
+    <link href="jokewang.top/2016/11/16/%E6%B1%87%E7%BC%96%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    <id>jokewang.top/2016/11/16/汇编基础知识/</id>
+    <published>2016-11-16T03:15:05.000Z</published>
+    <updated>2016-11-16T03:21:50.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;Type-与-Value&quot;&gt;&lt;a href=&quot;#Type-与-Value&quot; class=&quot;headerlink&quot; title=&quot;Type 与 Value&quot;&gt;&lt;/a&gt;Type 与 Value&lt;/h1&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;int i = 123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;char c = (char)i;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这段代码声明了一个 int 类型的变量和一个 char 类型的变量，有初始化和类型强转过程，在 x86_64 架构下，这两行代码的汇编如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;movl $123, -4(%rbp)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;movl -4(%rbp), %eax&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;movb %al, %cl&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;movb %cl, -5(%rbp)&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;pre&gt;&lt;code&gt;movl $123, -4(%rbp)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;move 指令就是简单的值拷贝，这条指令中出现的 movl 表示按低 32 位的长度来拷贝（也就是一个 int 的长度），与之相似的还有 8 位的 movb（char）、16 位的 movw (short)、64 位的 movq (long in 64) 等；$123 即字面常量值；-4(%rbp) 代表 base pointer - 栈基地址寄存器，偏移 4 字节的位置。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;movl -4(%rbp), %eax
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将刚才 4 字节长度内存赋值给 %eax 寄存器，它是最常用的通用寄存器之一，名为 accumulator，在 64 位架构下，rax 表示这个寄存器的完全体，eax 表示它的低 32 位，ax 表示低 16 位，ah 表示第 8~16 位，al 表示最低的 8 位。这样抠门的设计一部分因为兼容历史的 32 架构，一方面也是为了更充分利用寄存器这个宝贵的资源： &lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xtel4.com1.z0.glb.clouddn.com/2016-08-13-%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202016-07-27%20%E4%B8%8B%E5%8D%8810.51.59.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;movb %al, %cl
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;按 8 位长度 (char) 将 a 寄存器的最低 8 位移动到 c 寄存器（count register）的低 8 位。这一个指令就在做 int 到 char 的类型转换，把 123 存在寄存器的低 32 位上，再把寄存器的最低 8 位取出来，相当于把 00000000000000000000000001111011 截断成了 01111011。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;movb %cl, -5(%rbp)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;最后，再把刚才的结果按 8 字节的长度拷贝到 %rbp 偏移 5 的位置，完成这个 char 类型栈变量的赋值&lt;/p&gt;
+&lt;p&gt;参考&lt;a href=&quot;http://blog.sunnyxx.com/2016/08/13/reunderstanding-runtime-1/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;孙源文章&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Type-与-Value&quot;&gt;&lt;a href=&quot;#Type-与-Value&quot; class=&quot;headerlink&quot; title=&quot;Type 与 Value&quot;&gt;&lt;/a&gt;Type 与 Value&lt;/h1&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;
+    
+    </summary>
+    
+      <category term="汇编" scheme="jokewang.top/categories/%E6%B1%87%E7%BC%96/"/>
+    
+    
+      <category term="基础知识" scheme="jokewang.top/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>移动端直播技术选型</title>
+    <link href="jokewang.top/2016/11/15/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E7%9B%B4%E6%92%AD%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/"/>
+    <id>jokewang.top/2016/11/15/移动端直播技术选型/</id>
+    <published>2016-11-15T09:17:31.000Z</published>
+    <updated>2016-11-17T05:49:16.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;自己做还是用SDK&quot;&gt;&lt;a href=&quot;#自己做还是用SDK&quot; class=&quot;headerlink&quot; title=&quot;自己做还是用SDK&quot;&gt;&lt;/a&gt;自己做还是用SDK&lt;/h1&gt;&lt;p&gt;先上个流程图&lt;br&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E7%9B%B4%E6%92%AD%E6%B5%81%E7%A8%8B.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;自己做&quot;&gt;&lt;a href=&quot;#自己做&quot; class=&quot;headerlink&quot; title=&quot;自己做&quot;&gt;&lt;/a&gt;自己做&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;优点：&lt;br&gt;就是高度自定义，相对便宜,为以后向流媒体发展铺垫技术&lt;/li&gt;
+&lt;li&gt;缺点：&lt;br&gt;需要各个端都要熟悉，复杂。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;SDK&quot;&gt;&lt;a href=&quot;#SDK&quot; class=&quot;headerlink&quot; title=&quot;SDK&quot;&gt;&lt;/a&gt;SDK&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;优点：&lt;br&gt;现有API可以用，简单&lt;/li&gt;
+&lt;li&gt;缺点：&lt;br&gt;相对自己做费用要高，但是流量和存储费用两者都要掏&lt;/li&gt;
+&lt;/ul&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;p&gt;对比了一下，还是SDK来的简单。&lt;/p&gt;
+&lt;h1 id=&quot;各SDK平台对比&quot;&gt;&lt;a href=&quot;#各SDK平台对比&quot; class=&quot;headerlink&quot; title=&quot;各SDK平台对比&quot;&gt;&lt;/a&gt;各SDK平台对比&lt;/h1&gt;&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;名称&lt;/th&gt;
+&lt;th&gt;趣拍&lt;/th&gt;
+&lt;th&gt;百度云&lt;/th&gt;
+&lt;th&gt;网易云&lt;/th&gt;
+&lt;th&gt;阿里云&lt;/th&gt;
+&lt;th&gt;金山云&lt;/th&gt;
+&lt;th&gt;乐视云&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;单价&lt;/td&gt;
+&lt;td&gt;10G以下免费，超过0.36元/GB&lt;/td&gt;
+&lt;td&gt;按流量算：&lt;br&gt;0.64元/GB &lt;br&gt;按每日峰值算:&lt;br&gt;1.8元/Mbps/天&lt;/td&gt;
+&lt;td&gt;按流量算：&lt;br&gt;1元/GB &lt;br&gt;按每日峰值算:&lt;br&gt;1.17元/Mbps/天&lt;/td&gt;
+&lt;td&gt;尚不明确&lt;/td&gt;
+&lt;td&gt;尚不明确&lt;/td&gt;
+&lt;td&gt;基础部分如图1&lt;br&gt;超出流量：0.49元/GB&lt;br&gt;超出转码时长720P/1080P：0.018元/分钟&lt;br&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;500用户同时观看总时长60分钟&lt;/td&gt;
+&lt;td&gt;标清（480p）：&lt;br&gt; 46.35元 &lt;br&gt;高清（720p）: &lt;br&gt;79.10元&lt;/td&gt;
+&lt;td&gt;标清（480p）：&lt;br&gt; 82.56元(流量算) &lt;br&gt; 526.89元/天 &lt;br&gt;高清（720p）:&lt;br&gt;140.90元(流量算)&lt;br&gt;899.23元/天&lt;/td&gt;
+&lt;td&gt;标清（480p）：&lt;br&gt;129元(流量算) &lt;br&gt;342.48元/天 &lt;br&gt;高清（720p）: &lt;br&gt;220.17元(流量算) &lt;br&gt;584.5元/天&lt;/td&gt;
+&lt;td&gt;尚不明确&lt;/td&gt;
+&lt;td&gt;尚不明确&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;优点&lt;/td&gt;
+&lt;td&gt;用户少的时候按流量算最便宜&lt;/td&gt;
+&lt;td&gt;自定义设计较多&lt;/td&gt;
+&lt;td&gt;实现简单&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;技术成熟&lt;/td&gt;
+&lt;td&gt;技术成熟 &lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;缺点&lt;/td&gt;
+&lt;td&gt;需要自建推流服务器，但提供SDK，UI不可自定义&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;文档复杂&lt;/td&gt;
+&lt;td&gt;文档复杂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;大部分 SDK提供商已经将主要功能做完整，百度云在自定义方面设计的比较多。网易云简单易接入。&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E7%9B%B4%E6%92%AD_%E4%B9%90%E8%A7%86%E5%9F%BA%E7%A1%80%E4%BB%B7%E6%A0%BC.png&quot; alt=&quot;图 1 乐视视频云基础定价&quot;&gt;&lt;/p&gt;
+&lt;center&gt;&lt;font color=&quot;Silver&quot;&gt; 图 1 乐视视频云基础定价&lt;/font&gt;&lt;/center&gt;</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;自己做还是用SDK&quot;&gt;&lt;a href=&quot;#自己做还是用SDK&quot; class=&quot;headerlink&quot; title=&quot;自己做还是用SDK&quot;&gt;&lt;/a&gt;自己做还是用SDK&lt;/h1&gt;&lt;p&gt;先上个流程图&lt;br&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E7%9B%B4%E6%92%AD%E6%B5%81%E7%A8%8B.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;自己做&quot;&gt;&lt;a href=&quot;#自己做&quot; class=&quot;headerlink&quot; title=&quot;自己做&quot;&gt;&lt;/a&gt;自己做&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;优点：&lt;br&gt;就是高度自定义，相对便宜,为以后向流媒体发展铺垫技术&lt;/li&gt;
+&lt;li&gt;缺点：&lt;br&gt;需要各个端都要熟悉，复杂。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;SDK&quot;&gt;&lt;a href=&quot;#SDK&quot; class=&quot;headerlink&quot; title=&quot;SDK&quot;&gt;&lt;/a&gt;SDK&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;优点：&lt;br&gt;现有API可以用，简单&lt;/li&gt;
+&lt;li&gt;缺点：&lt;br&gt;相对自己做费用要高，但是流量和存储费用两者都要掏&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="技术" scheme="jokewang.top/categories/technology/"/>
+    
+    
+      <category term="技术杂谈" scheme="jokewang.top/tags/%E6%8A%80%E6%9C%AF%E6%9D%82%E8%B0%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>博客迁移</title>
+    <link href="jokewang.top/2016/11/11/%E5%8D%9A%E5%AE%A2%E8%BF%81%E7%A7%BB/"/>
+    <id>jokewang.top/2016/11/11/博客迁移/</id>
+    <published>2016-11-11T06:40:47.000Z</published>
+    <updated>2016-11-15T10:16:13.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;迁移原因&quot;&gt;&lt;a href=&quot;#迁移原因&quot; class=&quot;headerlink&quot; title=&quot;迁移原因&quot;&gt;&lt;/a&gt;迁移原因&lt;/h1&gt;&lt;p&gt;一直把博客托管在git上，但是上周突然CSS样式加载不了。就想自己搭个服务器。正好学一下服务器知识。再加上腾讯云各种打折。于是说干就干&lt;/p&gt;
+&lt;h1 id=&quot;迁移过程&quot;&gt;&lt;a href=&quot;#迁移过程&quot; class=&quot;headerlink&quot; title=&quot;迁移过程&quot;&gt;&lt;/a&gt;迁移过程&lt;/h1&gt;&lt;p&gt;刚开始是用的centOS 搭的服务器，结果发现竟然是命令行，搞了几次实在搞不懂就换成了windows Server2012  讲真，windows做的真不错。腾讯的客服也给力。&lt;br&gt;然而。好多命令在windows上并没有，而GUI的方法又没有教程。。。。&lt;br&gt;我又再次麻烦了腾讯客服换成了centOS  23333😂&lt;br&gt;最后找了好几个博客。一直没弄好，而且基本上所有博客都一样。。。真是天下文章一大抄。&lt;br&gt; 最后看了&lt;a href=&quot;http://www.hansoncoder.com/2016/03/02/VPS-building-Hexo/#VPS上安装配置Git&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;这个&lt;/a&gt;博客才把问题解决的，但是也出了一些问题。&lt;/p&gt;
+ &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h1 id=&quot;出现的问题&quot;&gt;&lt;a href=&quot;#出现的问题&quot; class=&quot;headerlink&quot; title=&quot;出现的问题&quot;&gt;&lt;/a&gt;出现的问题&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;参考博客是通过网页把内容粘贴到文件中的，（公钥之类的），我竟然是手打，后来发现通过FTP 的方式可以可视化粘贴内容，特别方便。或者用本地SSH客户端，总之不要用腾讯网页版的SSH连接，不能粘贴很麻烦。&lt;/li&gt;
+&lt;li&gt;一定要注意权限问题，我最后所有都能好了，但是就是上传不上去。git一直提示没权限，看好是用哪个用户建立的&lt;/li&gt;
+&lt;li&gt;git仓库的权限写757会方便， 757是会有公共写入权限。 755只有用户有权限，上传的时候莫名其妙遇到问题。&lt;/li&gt;
+&lt;li&gt;博客用的centOS 6.X 的系统，我用的7.2 有的命令发生了变化，按提示的命令来就OK了，有的软件没有的话用 yum 安装一下就ok了。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;[root /]# /etc/init.d/nginx start&lt;/code&gt; 这个命令发生了大变化，7.2不再需要配置文件然后通过脚本启动了,参考&lt;a href=&quot;https://my.oschina.net/liucao/blog/470344&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;这篇文章&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;最后，如果git方法不行，或者git太麻烦的话，本地生成的public 目录，直接扔到Nginx 服务器目录就OK了，可视化操作还是很快的&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;迁移原因&quot;&gt;&lt;a href=&quot;#迁移原因&quot; class=&quot;headerlink&quot; title=&quot;迁移原因&quot;&gt;&lt;/a&gt;迁移原因&lt;/h1&gt;&lt;p&gt;一直把博客托管在git上，但是上周突然CSS样式加载不了。就想自己搭个服务器。正好学一下服务器知识。再加上腾讯云各种打折。于是说干就干&lt;/p&gt;
+&lt;h1 id=&quot;迁移过程&quot;&gt;&lt;a href=&quot;#迁移过程&quot; class=&quot;headerlink&quot; title=&quot;迁移过程&quot;&gt;&lt;/a&gt;迁移过程&lt;/h1&gt;&lt;p&gt;刚开始是用的centOS 搭的服务器，结果发现竟然是命令行，搞了几次实在搞不懂就换成了windows Server2012  讲真，windows做的真不错。腾讯的客服也给力。&lt;br&gt;然而。好多命令在windows上并没有，而GUI的方法又没有教程。。。。&lt;br&gt;我又再次麻烦了腾讯客服换成了centOS  23333😂&lt;br&gt;最后找了好几个博客。一直没弄好，而且基本上所有博客都一样。。。真是天下文章一大抄。&lt;br&gt; 最后看了&lt;a href=&quot;http://www.hansoncoder.com/2016/03/02/VPS-building-Hexo/#VPS上安装配置Git&quot;&gt;这个&lt;/a&gt;博客才把问题解决的，但是也出了一些问题。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="技术" scheme="jokewang.top/categories/technology/"/>
+    
+    
+      <category term="闲聊" scheme="jokewang.top/tags/%E9%97%B2%E8%81%8A/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>孙源博客</title>
+    <link href="jokewang.top/2016/11/07/%E5%AD%99%E6%BA%90%E5%8D%9A%E5%AE%A2/"/>
+    <id>jokewang.top/2016/11/07/孙源博客/</id>
+    <published>2016-11-07T04:19:56.000Z</published>
+    <updated>2016-11-07T05:34:34.000Z</updated>
+    
+    <content type="html">&lt;p&gt;以前看过源神的tableview高度自动布局库，&lt;br&gt;然后今天看到了源神的&lt;a href=&quot;http://blog.sunnyxx.com/2016/08/13/reunderstanding-runtime-0/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;重识 Objective-C Runtime - Smalltalk 与 C 的融合&lt;/a&gt;和&lt;a href=&quot;http://blog.sunnyxx.com/2016/08/13/reunderstanding-runtime-1/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;重识 Objective-C Runtime - 看透 Type 与 Value&lt;/a&gt;感觉发现了新大陆啊。&lt;br&gt;然后看了眼源神博客列表各种黑科技。&lt;br&gt;强烈推荐&lt;a href=&quot;http://blog.sunnyxx.com/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;源神博客&lt;/a&gt;。&lt;br&gt;虽然没人看我的博客2333。&lt;/p&gt;
+&lt;blockquote class=&quot;blockquote-center&quot;&gt;只有最充满智慧并严于律己的学徒才能够走上法师之路。&lt;/blockquote&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;以前看过源神的tableview高度自动布局库，&lt;br&gt;然后今天看到了源神的&lt;a href=&quot;http://blog.sunnyxx.com/2016/08/13/reunderstanding-runtime-0/&quot; target=&quot;_blank&quot; rel=&quot;extern
+    
+    </summary>
+    
+      <category term="iOS" scheme="jokewang.top/categories/iOS/"/>
+    
+    
+      <category term="闲聊" scheme="jokewang.top/tags/%E9%97%B2%E8%81%8A/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Objective-C类成员变量深度剖析</title>
+    <link href="jokewang.top/2016/11/07/Objective-C%E7%B1%BB%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F%E6%B7%B1%E5%BA%A6%E5%89%96%E6%9E%90/"/>
+    <id>jokewang.top/2016/11/07/Objective-C类成员变量深度剖析/</id>
+    <published>2016-11-07T03:59:41.000Z</published>
+    <updated>2016-11-07T04:02:30.000Z</updated>
+    
+    <content type="html">&lt;ul&gt;
+&lt;li&gt;Objective-C的 -&amp;gt; 操作符不是C语言指针操作！&lt;/li&gt;
+&lt;li&gt;Objective-C对象不能简单对应于一个C struct，访问成员变量不等于访问C struct成员！&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;参考&lt;a href=&quot;http://quotation.github.io/objc/2015/05/21/objc-runtime-ivar-access.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;这篇文章&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;ul&gt;
+&lt;li&gt;Objective-C的 -&amp;gt; 操作符不是C语言指针操作！&lt;/li&gt;
+&lt;li&gt;Objective-C对象不能简单对应于一个C struct，访问成员变量不等于访问C struct成员！&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;参考&lt;a href=&quot;http://quo
+    
+    </summary>
+    
+      <category term="iOS" scheme="jokewang.top/categories/iOS/"/>
+    
+    
+      <category term="基础知识" scheme="jokewang.top/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>xcode8更新出现的坑</title>
+    <link href="jokewang.top/2016/09/14/xcode8%E6%9B%B4%E6%96%B0%E5%87%BA%E7%8E%B0%E7%9A%84%E5%9D%91/"/>
+    <id>jokewang.top/2016/09/14/xcode8更新出现的坑/</id>
+    <published>2016-09-14T03:31:49.000Z</published>
+    <updated>2016-11-11T06:58:55.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;xcode8注释快捷键失效的问题&quot;&gt;&lt;a href=&quot;#xcode8注释快捷键失效的问题&quot; class=&quot;headerlink&quot; title=&quot;xcode8注释快捷键失效的问题&quot;&gt;&lt;/a&gt;xcode8注释快捷键失效的问题&lt;/h1&gt;&lt;p&gt;1、命令行里输入：&lt;/p&gt;
+&lt;p&gt;sudo /usr/libexec/xpccachectl&lt;/p&gt;
+&lt;p&gt;2、重启电脑&lt;/p&gt;
+&lt;h1 id=&quot;xcode8插件失效问题&quot;&gt;&lt;a href=&quot;#xcode8插件失效问题&quot; class=&quot;headerlink&quot; title=&quot;xcode8插件失效问题&quot;&gt;&lt;/a&gt;xcode8插件失效问题&lt;/h1&gt;&lt;h2 id=&quot;解决方案&quot;&gt;&lt;a href=&quot;#解决方案&quot; class=&quot;headerlink&quot; title=&quot;解决方案&quot;&gt;&lt;/a&gt;解决方案&lt;/h2&gt;&lt;h3 id=&quot;update：&quot;&gt;&lt;a href=&quot;#update：&quot; class=&quot;headerlink&quot; title=&quot;update：&quot;&gt;&lt;/a&gt;update：&lt;/h3&gt;&lt;p&gt; &lt;a href=&quot;https://github.com/inket/update_xcode_plugins&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;这个命令更简单的样子&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt; 去签名版本可能无限菊花闪退，解决办法&lt;br&gt; 系统偏好设置-安全性与隐私-隐私-通讯录  去掉xcode前面的勾&lt;br&gt; 然后把插件都拿出来，一个个添加排除闪退的插件。&lt;/p&gt;
+  &lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;p&gt;—————-以前的——————————– &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;1.下载&lt;a href=&quot;https://github.com/fpg1503/MakeXcodeGr8Again&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;这个插件&lt;/a&gt;导出 product（product-archive-选择最后一个）&lt;/li&gt;
+&lt;li&gt;2.退出 Xcode8，同时运行刚刚导出的 MakeXcodeGr8Again，将 Xcode8 拖入其中，等待一段时间(3~10分钟)。&lt;/li&gt;
+&lt;li&gt;3.等菊花转完后，应用程序文件夹下会生成一个 XcodeGr8 的应用，运行命令 sudo xcode-select -s /Applications/XcodeGr8.app/Contents/Developer 将 Xcode 开发路径指向刚生成的 XcodeGr8。&lt;/li&gt;
+&lt;li&gt;4.命令行里输入：&lt;br&gt;find ~/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins -name Info.plist -maxdepth 3 | xargs -I{} defaults write {} DVTPlugInCompatibilityUUIDs -array-add &lt;code&gt;defaults read /Applications/XcodeGr8.app/Contents/Info.plist DVTPlugInCompatibilityUUID&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;可能遇到的问题&quot;&gt;&lt;a href=&quot;#可能遇到的问题&quot; class=&quot;headerlink&quot; title=&quot;可能遇到的问题&quot;&gt;&lt;/a&gt;可能遇到的问题&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;1.生成了 XcodeGr8 之后，打不开。 解决方法：重启。&lt;/li&gt;
+&lt;li&gt;2.如果之前对其它版本的 Xcode-beat 也有使用这种方式，再对 Xcode8 GM 也是用该方式可能 MakeXcodeGr8Again 这个 APP 会一直闪退。 解决方法：卸载之前生成的 XcodeGr8，再重试。卸载后记得将开发路径重新指回原来的路径，即 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer。如果这种方式还不行，卸载所有版本的 Xcode，然后再安装 GM 版，重复上述步骤。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;注意&quot;&gt;&lt;a href=&quot;#注意&quot; class=&quot;headerlink&quot; title=&quot;注意&quot;&gt;&lt;/a&gt;注意&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;1.如果要卸载 XcodeGr8，记得将重新开发路径置回初始状态。&lt;/p&gt;
+&lt;p&gt;不要使用 XcodeGr8 打包上传 Appstore，最好使用服务器打包，保证服务器 Xcode 是 Appstore 下载的！！！&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;xcode8注释快捷键失效的问题&quot;&gt;&lt;a href=&quot;#xcode8注释快捷键失效的问题&quot; class=&quot;headerlink&quot; title=&quot;xcode8注释快捷键失效的问题&quot;&gt;&lt;/a&gt;xcode8注释快捷键失效的问题&lt;/h1&gt;&lt;p&gt;1、命令行里输入：&lt;/p&gt;
+&lt;p&gt;sudo /usr/libexec/xpccachectl&lt;/p&gt;
+&lt;p&gt;2、重启电脑&lt;/p&gt;
+&lt;h1 id=&quot;xcode8插件失效问题&quot;&gt;&lt;a href=&quot;#xcode8插件失效问题&quot; class=&quot;headerlink&quot; title=&quot;xcode8插件失效问题&quot;&gt;&lt;/a&gt;xcode8插件失效问题&lt;/h1&gt;&lt;h2 id=&quot;解决方案&quot;&gt;&lt;a href=&quot;#解决方案&quot; class=&quot;headerlink&quot; title=&quot;解决方案&quot;&gt;&lt;/a&gt;解决方案&lt;/h2&gt;&lt;h3 id=&quot;update：&quot;&gt;&lt;a href=&quot;#update：&quot; class=&quot;headerlink&quot; title=&quot;update：&quot;&gt;&lt;/a&gt;update：&lt;/h3&gt;&lt;p&gt; &lt;a href=&quot;https://github.com/inket/update_xcode_plugins&quot;&gt;这个命令更简单的样子&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt; 去签名版本可能无限菊花闪退，解决办法&lt;br&gt; 系统偏好设置-安全性与隐私-隐私-通讯录  去掉xcode前面的勾&lt;br&gt; 然后把插件都拿出来，一个个添加排除闪退的插件。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="iOS" scheme="jokewang.top/categories/iOS/"/>
+    
+    
+      <category term="奇巧淫技" scheme="jokewang.top/tags/%E5%A5%87%E5%B7%A7%E6%B7%AB%E6%8A%80/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>NSURLProtocol 拦截网络请求</title>
+    <link href="jokewang.top/2016/09/01/NSURLProtocol%20%E6%8B%A6%E6%88%AA%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82/"/>
+    <id>jokewang.top/2016/09/01/NSURLProtocol 拦截网络请求/</id>
+    <published>2016-09-01T09:38:10.000Z</published>
+    <updated>2016-09-05T01:51:42.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;写在前面的话&quot;&gt;&lt;a href=&quot;#写在前面的话&quot; class=&quot;headerlink&quot; title=&quot;写在前面的话&quot;&gt;&lt;/a&gt;写在前面的话&lt;/h1&gt;&lt;p&gt;这篇文章是看来&lt;a href=&quot;http://awhisper.github.io/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;敬哥&lt;/a&gt;的&lt;a href=&quot;https://github.com/Awhisper/VKDevTool&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;黑盒测试库&lt;/a&gt;想到的，这个测试库有个显示网络请求的模块，但是在自己项目里怎么也不行，上网查了各种资料总结了这篇文章。&lt;/p&gt;
+&lt;h1 id=&quot;NSURLProtocol&quot;&gt;&lt;a href=&quot;#NSURLProtocol&quot; class=&quot;headerlink&quot; title=&quot;NSURLProtocol&quot;&gt;&lt;/a&gt;NSURLProtocol&lt;/h1&gt;&lt;p&gt;NSURLProtocol可以让我们拦截程序中的一切网络请求，主要进行如下拦截处理:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;自定义请求 和 响应&lt;/li&gt;
+&lt;li&gt;过滤掉某些请求不让其发起、以及修改&lt;/li&gt;
+&lt;li&gt;提供 自定义的全局缓存 逻辑&lt;/li&gt;
+&lt;li&gt;重定向 网络请求&lt;/li&gt;
+&lt;li&gt;提供 HTTP Mocking (方便前期测试)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;h1 id=&quot;如何拦截网络请求&quot;&gt;&lt;a href=&quot;#如何拦截网络请求&quot; class=&quot;headerlink&quot; title=&quot;如何拦截网络请求?&quot;&gt;&lt;/a&gt;如何拦截网络请求?&lt;/h1&gt;&lt;h2 id=&quot;编写NSURLProtocol子类&quot;&gt;&lt;a href=&quot;#编写NSURLProtocol子类&quot; class=&quot;headerlink&quot; title=&quot;编写NSURLProtocol子类&quot;&gt;&lt;/a&gt;编写NSURLProtocol子类&lt;/h2&gt;&lt;h3 id=&quot;重写方法一-请求的过滤，筛选出需要进行处理的请求&quot;&gt;&lt;a href=&quot;#重写方法一-请求的过滤，筛选出需要进行处理的请求&quot; class=&quot;headerlink&quot; title=&quot;重写方法一 请求的过滤，筛选出需要进行处理的请求&quot;&gt;&lt;/a&gt;重写方法一 请求的过滤，筛选出需要进行处理的请求&lt;/h3&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;+ (&lt;span class=&quot;built_in&quot;&gt;BOOL&lt;/span&gt;)canInitWithRequest:(&lt;span class=&quot;built_in&quot;&gt;NSURLRequest&lt;/span&gt; *)request&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#ifdef VKDevMode&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;   &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//只处理http和https请求&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; *scheme = [[request URL] scheme];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; ( ([scheme caseInsensitiveCompare:&lt;span class=&quot;string&quot;&gt;@&quot;http&quot;&lt;/span&gt;] == &lt;span class=&quot;built_in&quot;&gt;NSOrderedSame&lt;/span&gt; ||&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;          [scheme caseInsensitiveCompare:&lt;span class=&quot;string&quot;&gt;@&quot;https&quot;&lt;/span&gt;] == &lt;span class=&quot;built_in&quot;&gt;NSOrderedSame&lt;/span&gt;))&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;//看看是否已经处理过了，防止无限循环&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;         &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; ([&lt;span class=&quot;built_in&quot;&gt;NSURLProtocol&lt;/span&gt; propertyForKey:VKURLProtocolHandledKey inRequest:request])&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;           &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;               &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NO&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;           &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;YES&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#endif&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NO&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这个方法指明你是否要处理request，如果不打算处理的话返回NO就行，系统会使用默认的URL加载系统处理request，如果返回YES,URL Loading System会将request的处理操作交给你的urlProtocol。上面的代码我们只处理了http和https请求(你也可以拦截ftp等请求),通常我们的接口中都会包含特定的字符串，将它设置为你项目中对应的接口字段即可。还有一点需要注意，我们不能总是返回YES，这样会导致无限循环，(因为一个请求在被拦截处理过程中，也会发起一个请求) 我们可以通过+ (void)setProperty:(id)value forKey:(NSString &lt;em&gt;)key inRequest:(NSMutableURLRequest &lt;/em&gt;)request方法来标记request已经被处理过，如果通过+ (nullable id)propertyForKey:(NSString &lt;em&gt;)key inRequest:(NSURLRequest &lt;/em&gt;)request方法获取到已经处理过该request，则返回NO。&lt;/p&gt;
+&lt;h3 id=&quot;重写方法二、请求重定向、修改请求头&quot;&gt;&lt;a href=&quot;#重写方法二、请求重定向、修改请求头&quot; class=&quot;headerlink&quot; title=&quot;重写方法二、请求重定向、修改请求头&quot;&gt;&lt;/a&gt;重写方法二、请求重定向、修改请求头&lt;/h3&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;+ (&lt;span class=&quot;built_in&quot;&gt;NSURLRequest&lt;/span&gt; *) canonicalRequestForRequest:(&lt;span class=&quot;built_in&quot;&gt;NSURLRequest&lt;/span&gt; *)request &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; request;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;重写方法三、让被拦截的请求执行&quot;&gt;&lt;a href=&quot;#重写方法三、让被拦截的请求执行&quot; class=&quot;headerlink&quot; title=&quot;重写方法三、让被拦截的请求执行&quot;&gt;&lt;/a&gt;重写方法三、让被拦截的请求执行&lt;/h3&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;-(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)startLoading&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//打标签，防止无限循环&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSMutableURLRequest&lt;/span&gt; *mutableReqeust = [[&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; request] mutableCopy];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;built_in&quot;&gt;NSURLProtocol&lt;/span&gt; setProperty:@YES forKey:VKURLProtocolHandledKey inRequest:mutableReqeust];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#pragma clang diagnostic push&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#pragma clang diagnostic ignored &lt;span class=&quot;meta-string&quot;&gt;&quot;-Wdeprecated-declarations&quot;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.connection = [&lt;span class=&quot;built_in&quot;&gt;NSURLConnection&lt;/span&gt; connectionWithRequest:mutableReqeust delegate:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#pragma clang diagnostic pop&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;重写方法四、取消执行请求&quot;&gt;&lt;a href=&quot;#重写方法四、取消执行请求&quot; class=&quot;headerlink&quot; title=&quot;重写方法四、取消执行请求&quot;&gt;&lt;/a&gt;重写方法四、取消执行请求&lt;/h3&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;-(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)stopLoading&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.connection cancel];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;重写方法五、可用来使用缓存数据结束此次网络请求&quot;&gt;&lt;a href=&quot;#重写方法五、可用来使用缓存数据结束此次网络请求&quot; class=&quot;headerlink&quot; title=&quot;重写方法五、可用来使用缓存数据结束此次网络请求&quot;&gt;&lt;/a&gt;重写方法五、可用来使用缓存数据结束此次网络请求&lt;/h3&gt;&lt;p&gt;如果不考虑自定义缓存逻辑，可以不重写此方法&lt;br&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;+(&lt;span class=&quot;built_in&quot;&gt;BOOL&lt;/span&gt;)requestIsCacheEquivalent:(&lt;span class=&quot;built_in&quot;&gt;NSURLRequest&lt;/span&gt; *)a toRequest:(&lt;span class=&quot;built_in&quot;&gt;NSURLRequest&lt;/span&gt; *)b&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; [&lt;span class=&quot;keyword&quot;&gt;super&lt;/span&gt; requestIsCacheEquivalent:a toRequest:b];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;h3 id=&quot;demo1-自定义NSURLProtol拦截请求后进行处理，然后使用NSURLSession继续执行网络请求&quot;&gt;&lt;a href=&quot;#demo1-自定义NSURLProtol拦截请求后进行处理，然后使用NSURLSession继续执行网络请求&quot; class=&quot;headerlink&quot; title=&quot;demo1 自定义NSURLProtol拦截请求后进行处理，然后使用NSURLSession继续执行网络请求&quot;&gt;&lt;/a&gt;demo1 自定义NSURLProtol拦截请求后进行处理，然后使用NSURLSession继续执行网络请求&lt;/h3&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#import &lt;span class=&quot;meta-string&quot;&gt;&amp;lt;Foundation/Foundation.h&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@interface&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;MySessionURLProtocol&lt;/span&gt; : &lt;span class=&quot;title&quot;&gt;NSURLProtocol&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@end&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#import &lt;span class=&quot;meta-string&quot;&gt;&quot;MySessionURLProtocol.h&quot;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//防止循环拦截的标识&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#define protocolKey @&lt;span class=&quot;meta-string&quot;&gt;&quot;SessionProtocolKey&quot;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@interface&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;MySessionURLProtocol&lt;/span&gt; ()&amp;lt;&lt;span class=&quot;title&quot;&gt;NSURLSessionDataDelegate&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;, &lt;span class=&quot;keyword&quot;&gt;strong&lt;/span&gt;) &lt;span class=&quot;built_in&quot;&gt;NSURLSession&lt;/span&gt; * session;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@end&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;21&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;22&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;23&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;24&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;25&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;26&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;27&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;28&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;29&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;30&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;31&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;32&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;33&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;34&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;35&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;36&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;37&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;38&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;39&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;40&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;41&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;42&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;43&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;44&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;45&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;46&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;47&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;48&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;49&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;50&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;51&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;52&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;53&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;54&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;55&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;56&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;57&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;58&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;59&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;60&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;61&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;62&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;63&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;64&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;65&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;66&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;67&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;68&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;69&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;70&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;71&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;72&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;73&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;74&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;75&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;76&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;77&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;78&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;79&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;80&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;81&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;82&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;83&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;84&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;85&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;86&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;87&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;88&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;89&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;90&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;91&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;92&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;93&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;94&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;95&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;96&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;97&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;98&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;99&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;100&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;101&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;102&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;103&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;104&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;105&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;106&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;107&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;108&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;109&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;110&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;111&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;112&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;113&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;114&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;115&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;116&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;117&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;118&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;119&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;120&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;121&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;122&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;123&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@implementation&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;MySessionURLProtocol&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  是否拦截处理指定的请求&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  @param request 指定的请求&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  @return 返回YES表示要拦截处理，返回NO表示不拦截处理&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; */&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;+ (&lt;span class=&quot;built_in&quot;&gt;BOOL&lt;/span&gt;)canInitWithRequest:(&lt;span class=&quot;built_in&quot;&gt;NSURLRequest&lt;/span&gt; *)request &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;/*&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;     防止无限循环，因为一个请求在被拦截处理过程中，也会发起一个请求，这样又会走到这里，如果不进行处理，就会造成无限循环&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;     如果已经拦截处理了，就不再进行拦截了，直接让其发起网络请求.&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;     */&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; ([&lt;span class=&quot;built_in&quot;&gt;NSURLProtocol&lt;/span&gt; propertyForKey:protocolKey inRequest:request]) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NO&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// URL的全路径字符串&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; * url = request.URL.absoluteString;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;//只处理http和https请求&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; *scheme = [[request URL] scheme];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; ( ([scheme caseInsensitiveCompare:&lt;span class=&quot;string&quot;&gt;@&quot;http&quot;&lt;/span&gt;] == &lt;span class=&quot;built_in&quot;&gt;NSOrderedSame&lt;/span&gt; ||&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;     [scheme caseInsensitiveCompare:&lt;span class=&quot;string&quot;&gt;@&quot;https&quot;&lt;/span&gt;] == &lt;span class=&quot;built_in&quot;&gt;NSOrderedSame&lt;/span&gt;))&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;      &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;YES&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NO&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  如果需要对请求进行重定向，添加指定头部等操作，可以在该方法中进行&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  @param request 原请求&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  @return 修改后的请求&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; */&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;+ (&lt;span class=&quot;built_in&quot;&gt;NSURLRequest&lt;/span&gt; *)canonicalRequestForRequest:(&lt;span class=&quot;built_in&quot;&gt;NSURLRequest&lt;/span&gt; *)request &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 修改了请求的头部信息&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSMutableURLRequest&lt;/span&gt; * mutableReq = [request mutableCopy];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSMutableDictionary&lt;/span&gt; * headers = [mutableReq.allHTTPHeaderFields mutableCopy];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [headers setObject:&lt;span class=&quot;string&quot;&gt;@&quot;BBBB&quot;&lt;/span&gt; forKey:&lt;span class=&quot;string&quot;&gt;@&quot;Key2&quot;&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    mutableReq.allHTTPHeaderFields = headers;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//返回修改请求头后的Request&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; [mutableReq &lt;span class=&quot;keyword&quot;&gt;copy&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//还可以修改Request.url进行重定向&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//...&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  开始加载，在该方法中，加载一个请求&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; */&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)startLoading &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSMutableURLRequest&lt;/span&gt; * request = [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.request mutableCopy];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 标记当前传入的Request已经被拦截处理过，&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//防止在最开始又继续拦截处理&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;built_in&quot;&gt;NSURLProtocol&lt;/span&gt; setProperty:@(&lt;span class=&quot;literal&quot;&gt;YES&lt;/span&gt;) forKey:protocolKey inRequest:request];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//如下使用NSURLSession让拦截的请求进行请求网络&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSURLSessionConfiguration&lt;/span&gt; * config = [&lt;span class=&quot;built_in&quot;&gt;NSURLSessionConfiguration&lt;/span&gt; defaultSessionConfiguration];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.session = [&lt;span class=&quot;built_in&quot;&gt;NSURLSession&lt;/span&gt; sessionWithConfiguration:config delegate:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; delegateQueue:[&lt;span class=&quot;built_in&quot;&gt;NSOperationQueue&lt;/span&gt; mainQueue]];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSURLSessionDataTask&lt;/span&gt; * task = [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.session dataTaskWithRequest:request];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [task resume];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  取消请求&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; */&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)stopLoading &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.session invalidateAndCancel];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.session = &lt;span class=&quot;literal&quot;&gt;nil&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#pragma mark - NSURLSessionDataDelegate&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;-(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)URLSession:(&lt;span class=&quot;built_in&quot;&gt;NSURLSession&lt;/span&gt; *)session task:(&lt;span class=&quot;built_in&quot;&gt;NSURLSessionTask&lt;/span&gt; *)task didCompleteWithError:(&lt;span class=&quot;built_in&quot;&gt;NSError&lt;/span&gt; *)error&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (error) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.client URLProtocol:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; didFailWithError:error];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.client URLProtocolDidFinishLoading:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;-(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)URLSession:(&lt;span class=&quot;built_in&quot;&gt;NSURLSession&lt;/span&gt; *)session&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;         dataTask:(&lt;span class=&quot;built_in&quot;&gt;NSURLSessionDataTask&lt;/span&gt; *)dataTask&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;didReceiveResponse:(&lt;span class=&quot;built_in&quot;&gt;NSURLResponse&lt;/span&gt; *)response&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;completionHandler:(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; (^)(&lt;span class=&quot;built_in&quot;&gt;NSURLSessionResponseDisposition&lt;/span&gt;))completionHandler&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.client URLProtocol:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;          didReceiveResponse:response&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;          cacheStoragePolicy:&lt;span class=&quot;built_in&quot;&gt;NSURLCacheStorageNotAllowed&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    completionHandler(&lt;span class=&quot;built_in&quot;&gt;NSURLSessionResponseAllow&lt;/span&gt;);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;-(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)URLSession:(&lt;span class=&quot;built_in&quot;&gt;NSURLSession&lt;/span&gt; *)session&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;         dataTask:(&lt;span class=&quot;built_in&quot;&gt;NSURLSessionDataTask&lt;/span&gt; *)dataTask&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;   didReceiveData:(&lt;span class=&quot;built_in&quot;&gt;NSData&lt;/span&gt; *)data&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.client URLProtocol:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; didLoadData:data];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)URLSession:(&lt;span class=&quot;built_in&quot;&gt;NSURLSession&lt;/span&gt; *)session&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;          dataTask:(&lt;span class=&quot;built_in&quot;&gt;NSURLSessionDataTask&lt;/span&gt; *)dataTask&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; willCacheResponse:(&lt;span class=&quot;built_in&quot;&gt;NSCachedURLResponse&lt;/span&gt; *)proposedResponse&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; completionHandler:(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; (^)(&lt;span class=&quot;built_in&quot;&gt;NSCachedURLResponse&lt;/span&gt; *cachedResponse))completionHandler&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    completionHandler(proposedResponse);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@end&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;demo2、简单的重定向处理&quot;&gt;&lt;a href=&quot;#demo2、简单的重定向处理&quot; class=&quot;headerlink&quot; title=&quot;demo2、简单的重定向处理&quot;&gt;&lt;/a&gt;demo2、简单的重定向处理&lt;/h3&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;21&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;22&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;23&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;24&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;25&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;26&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;27&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;28&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;29&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;30&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;31&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;32&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;33&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;34&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;35&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;36&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;37&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;38&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;39&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;40&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;41&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;42&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;43&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;44&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;45&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;46&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;47&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;48&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;49&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;50&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@implementation&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;MySessionURLProtocol&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;...&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;+ (&lt;span class=&quot;built_in&quot;&gt;NSURLRequest&lt;/span&gt; *) canonicalRequestForRequest:(&lt;span class=&quot;built_in&quot;&gt;NSURLRequest&lt;/span&gt; *)request &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSMutableURLRequest&lt;/span&gt; *mutableReqeust = [request mutableCopy];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    mutableReqeust = [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; redirectHostInRequset:mutableReqeust];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; mutableReqeust;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;...&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;+(&lt;span class=&quot;built_in&quot;&gt;NSMutableURLRequest&lt;/span&gt;*)redirectHostInRequset:(&lt;span class=&quot;built_in&quot;&gt;NSMutableURLRequest&lt;/span&gt;*)request&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; ([request.URL host].length == &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; request;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//原始url全路径&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; *originUrlString = [request.URL absoluteString];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//原始url的host&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; *originHostString = [request.URL host];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//获取host的range&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSRange&lt;/span&gt; hostRange = [originUrlString rangeOfString:originHostString];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (hostRange.location == &lt;span class=&quot;built_in&quot;&gt;NSNotFound&lt;/span&gt;) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; request;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//重定向到bing搜索主页&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; *ip = &lt;span class=&quot;string&quot;&gt;@&quot;cn.bing.com&quot;&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 替换开始的host&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; *urlString = [originUrlString stringByReplacingCharactersInRange:hostRange withString:ip];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//得到重定向后的url&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSURL&lt;/span&gt; *url = [&lt;span class=&quot;built_in&quot;&gt;NSURL&lt;/span&gt; URLWithString:urlString];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//将新的url赋值给Request&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    request.URL = url;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//返回修改host重定向的request&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; request;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;...&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@end&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;demo3自定义NSURLProtol拦截请求后进行处理，然后使用NSURLConnection继续执行网络请求&quot;&gt;&lt;a href=&quot;#demo3自定义NSURLProtol拦截请求后进行处理，然后使用NSURLConnection继续执行网络请求&quot; class=&quot;headerlink&quot; title=&quot;demo3自定义NSURLProtol拦截请求后进行处理，然后使用NSURLConnection继续执行网络请求&quot;&gt;&lt;/a&gt;demo3自定义NSURLProtol拦截请求后进行处理，然后使用NSURLConnection继续执行网络请求&lt;/h3&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;21&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;22&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;23&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;24&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;25&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;26&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;27&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;28&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;29&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;30&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;31&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;32&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;33&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;34&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;35&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;36&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;37&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;38&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;39&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;40&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;41&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;42&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;43&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;44&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;45&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;46&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;47&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;48&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;49&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;50&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;51&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;52&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;53&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;54&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;55&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;56&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;57&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;58&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;59&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;60&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;61&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;62&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;63&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;64&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;65&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;66&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;67&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;68&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;69&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;70&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;71&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;72&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;73&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;74&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;75&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;76&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;77&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;78&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;79&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;80&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;81&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;82&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;83&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;84&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;85&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;86&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;87&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;88&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;89&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;90&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;91&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;92&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#import &lt;span class=&quot;meta-string&quot;&gt;&quot;MyConnectionURLProtocol.h&quot;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#define protocolKey @&lt;span class=&quot;meta-string&quot;&gt;&quot;ConnectionProtocolKey&quot;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@interface&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;MyConnectionURLProtocol&lt;/span&gt; () &amp;lt;&lt;span class=&quot;title&quot;&gt;NSURLConnectionDataDelegate&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;, &lt;span class=&quot;keyword&quot;&gt;strong&lt;/span&gt;) &lt;span class=&quot;built_in&quot;&gt;NSURLConnection&lt;/span&gt; * connection;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@end&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@implementation&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;MyConnectionURLProtocol&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  是否拦截处理指定的请求&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  @param request 指定的请求&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  @return 返回YES表示要拦截处理，返回NO表示不拦截处理&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; */&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;+ (&lt;span class=&quot;built_in&quot;&gt;BOOL&lt;/span&gt;)canInitWithRequest:(&lt;span class=&quot;built_in&quot;&gt;NSURLRequest&lt;/span&gt; *)request &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;/* &lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        防止无限循环，因为一个请求在被拦截处理过程中，也会发起一个请求，这样又会走到这里，如果不进行处理，就会造成无限循环&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;     */&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; ([&lt;span class=&quot;built_in&quot;&gt;NSURLProtocol&lt;/span&gt; propertyForKey:protocolKey inRequest:request]) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NO&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; * url = request.URL.absoluteString;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 如果url已http或https开头，则进行拦截处理，否则不处理&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; ([url hasPrefix:&lt;span class=&quot;string&quot;&gt;@&quot;http&quot;&lt;/span&gt;] || [url hasPrefix:&lt;span class=&quot;string&quot;&gt;@&quot;https&quot;&lt;/span&gt;]) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;YES&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NO&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  如果需要对请求进行重定向，添加指定头部等操作，可以在该方法中进行&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  @param request 原请求&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  @return 修改后的请求&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; */&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;+ (&lt;span class=&quot;built_in&quot;&gt;NSURLRequest&lt;/span&gt; *)canonicalRequestForRequest:(&lt;span class=&quot;built_in&quot;&gt;NSURLRequest&lt;/span&gt; *)request &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 修改了请求的头部信息&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSMutableURLRequest&lt;/span&gt; * mutableReq = [request mutableCopy];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSMutableDictionary&lt;/span&gt; * headers = [mutableReq.allHTTPHeaderFields mutableCopy];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [headers setObject:&lt;span class=&quot;string&quot;&gt;@&quot;AAAA&quot;&lt;/span&gt; forKey:&lt;span class=&quot;string&quot;&gt;@&quot;Key1&quot;&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    mutableReq.allHTTPHeaderFields = headers;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSLog&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;@&quot;connection reset header&quot;&lt;/span&gt;);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; [mutableReq &lt;span class=&quot;keyword&quot;&gt;copy&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  开始加载，在该方法中，加载一个请求&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; */&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)startLoading &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSMutableURLRequest&lt;/span&gt; * request = [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.request mutableCopy];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 表示该请求已经被处理，防止无限循环&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;built_in&quot;&gt;NSURLProtocol&lt;/span&gt; setProperty:@(&lt;span class=&quot;literal&quot;&gt;YES&lt;/span&gt;) forKey:protocolKey inRequest:request];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.connection = [&lt;span class=&quot;built_in&quot;&gt;NSURLConnection&lt;/span&gt; connectionWithRequest:request delegate:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; *  取消请求&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; */&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)stopLoading &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.connection cancel];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#pragma mark - NSURLConnectionDelegate&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)connection:(&lt;span class=&quot;built_in&quot;&gt;NSURLConnection&lt;/span&gt; *)connection didReceiveResponse:(&lt;span class=&quot;built_in&quot;&gt;NSURLResponse&lt;/span&gt; *)response &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.client URLProtocol:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; didReceiveResponse:response cacheStoragePolicy:&lt;span class=&quot;built_in&quot;&gt;NSURLCacheStorageNotAllowed&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)connection:(&lt;span class=&quot;built_in&quot;&gt;NSURLConnection&lt;/span&gt; *)connection didReceiveData:(&lt;span class=&quot;built_in&quot;&gt;NSData&lt;/span&gt; *)data &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.client URLProtocol:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; didLoadData:data];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)connectionDidFinishLoading:(&lt;span class=&quot;built_in&quot;&gt;NSURLConnection&lt;/span&gt; *)connection &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.client URLProtocolDidFinishLoading:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)connection:(&lt;span class=&quot;built_in&quot;&gt;NSURLConnection&lt;/span&gt; *)connection didFailWithError:(&lt;span class=&quot;built_in&quot;&gt;NSError&lt;/span&gt; *)error &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.client URLProtocol:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; didFailWithError:error];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@end&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;注册NSURLProtocol子类&quot;&gt;&lt;a href=&quot;#注册NSURLProtocol子类&quot; class=&quot;headerlink&quot; title=&quot;注册NSURLProtocol子类&quot;&gt;&lt;/a&gt;注册NSURLProtocol子类&lt;/h2&gt;&lt;p&gt;当app准备发起网络请求时会遍历所有已注册的NSURLProtocol，询问它们能否处理当前请求，所以你需要尽早注册这个Protocol。在遍历子类的过程是反向遍历的，最后注册的子类会先被遍历，这样自定义的子类将能提前截获请求，当一个子类截获请求后，将终止遍历。&lt;/p&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;built_in&quot;&gt;BOOL&lt;/span&gt;)application:(&lt;span class=&quot;built_in&quot;&gt;UIApplication&lt;/span&gt; *)application didFinishLaunchingWithOptions:(&lt;span class=&quot;built_in&quot;&gt;NSDictionary&lt;/span&gt; *)launchOptions &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;built_in&quot;&gt;NSURLProtocol&lt;/span&gt; registerClass:[MyURLProtocol &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;]];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;YES&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h2 id=&quot;发送网络请求&quot;&gt;&lt;a href=&quot;#发送网络请求&quot; class=&quot;headerlink&quot; title=&quot;发送网络请求&quot;&gt;&lt;/a&gt;发送网络请求&lt;/h2&gt;&lt;p&gt;NSURLProtocol 可以拦截 NSURLConnection、NSURLSession、UIwebview 的请求，但是不能拦截WKwebview 和CFNetwork的请求&lt;/p&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;   &lt;span class=&quot;built_in&quot;&gt;NSError&lt;/span&gt; *error =[&lt;span class=&quot;built_in&quot;&gt;NSError&lt;/span&gt; errorWithDomain:&lt;span class=&quot;string&quot;&gt;@&quot;woshige erro&quot;&lt;/span&gt; code:&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; userInfo:&lt;span class=&quot;literal&quot;&gt;nil&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSURLSession&lt;/span&gt; *session = [&lt;span class=&quot;built_in&quot;&gt;NSURLSession&lt;/span&gt; sharedSession];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSURL&lt;/span&gt; *url = [&lt;span class=&quot;built_in&quot;&gt;NSURL&lt;/span&gt; URLWithString:&lt;span class=&quot;string&quot;&gt;@&quot;http://appwk.baidu.com/naapi/iap/userbankinfo?uid=bd_0&amp;amp;from=ios_appstore&amp;amp;app_ua=Simulator&amp;amp;ua=bd_1334_750_Simulator_3.4.9_9.2&amp;amp;fr=2&amp;amp;pid=1&amp;amp;bid=2&amp;amp;Bdi_bear=wifi&amp;amp;app_ver=3.4.9&amp;amp;sys_ver=9.2&amp;amp;cuid=50c78ca9f3c39a34c963de578bef1d8c7aecc087&amp;amp;sessid=1471498926&amp;amp;screen=750_1334&amp;amp;opid=wk_na&amp;amp;ydvendor=84942C9A-E479-4856-945A-D55FBCDF4D57&quot;&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 通过URL初始化task,在block内部可以直接对返回的数据进行处理&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSURLSessionTask&lt;/span&gt; *task = [session dataTaskWithURL:url&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                                    completionHandler:^(&lt;span class=&quot;built_in&quot;&gt;NSData&lt;/span&gt; *data, &lt;span class=&quot;built_in&quot;&gt;NSURLResponse&lt;/span&gt; *response, &lt;span class=&quot;built_in&quot;&gt;NSError&lt;/span&gt; *error) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                                        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (data) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                                            &lt;span class=&quot;built_in&quot;&gt;NSLog&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;@&quot;%@&quot;&lt;/span&gt;, [&lt;span class=&quot;built_in&quot;&gt;NSJSONSerialization&lt;/span&gt; JSONObjectWithData:data options:kNilOptions error:&lt;span class=&quot;literal&quot;&gt;nil&lt;/span&gt;]);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                                        &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                                    &amp;#125;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [task resume];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h1 id=&quot;AFNetworking-3-0-以后版本出现的问题&quot;&gt;&lt;a href=&quot;#AFNetworking-3-0-以后版本出现的问题&quot; class=&quot;headerlink&quot; title=&quot;AFNetworking 3.0 以后版本出现的问题&quot;&gt;&lt;/a&gt;AFNetworking 3.0 以后版本出现的问题&lt;/h1&gt;&lt;p&gt;NSURLProtocol 确实可以拦截NSURLSession的请求，但是敬哥DEMO中的NSURLSession 是这样创建的&lt;br&gt;      NSURLSession *session = [NSURLSession sharedSession];&lt;br&gt;这样创建的session会使用全局的cooike和其他设置，所以默认是会被hook掉。但是AFN并不是这样创建的session。所以默认是不起作用的。&lt;br&gt;解决办法一是&lt;br&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;NSURLSessionConfiguration&lt;/span&gt; *configuration = [&lt;span class=&quot;built_in&quot;&gt;NSURLSessionConfiguration&lt;/span&gt; defaultSessionConfiguration];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;NSArray&lt;/span&gt; *protocolArray = @[[VKURLProtocol &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;]];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;configuration.protocolClasses = protocolArray;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;像这样在每个请求之前添加&lt;code&gt;protocolClasses&lt;/code&gt;或者子类和AFN然后进行设置。&lt;/p&gt;
+&lt;p&gt;简单的办法是。修改AFN源文件&lt;code&gt;AFURLSessionManager&lt;/code&gt;&lt;br&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;instancetype&lt;/span&gt;)initWithSessionConfiguration:(&lt;span class=&quot;built_in&quot;&gt;NSURLSessionConfiguration&lt;/span&gt; *)configuration &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;....&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (!configuration) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        configuration = [&lt;span class=&quot;built_in&quot;&gt;NSURLSessionConfiguration&lt;/span&gt; defaultSessionConfiguration];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;built_in&quot;&gt;NSArray&lt;/span&gt; *protocolArray = @[&lt;span class=&quot;built_in&quot;&gt;NSClassFromString&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;@&quot;VKURLProtocol&quot;&lt;/span&gt;)];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        configuration.protocolClasses = protocolArray;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; ....&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;在这个if中对&lt;code&gt;NSURLSessionConfiguration&lt;/code&gt;进行设置。或者采用method swizzing的方法进行。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;写在前面的话&quot;&gt;&lt;a href=&quot;#写在前面的话&quot; class=&quot;headerlink&quot; title=&quot;写在前面的话&quot;&gt;&lt;/a&gt;写在前面的话&lt;/h1&gt;&lt;p&gt;这篇文章是看来&lt;a href=&quot;http://awhisper.github.io/&quot;&gt;敬哥&lt;/a&gt;的&lt;a href=&quot;https://github.com/Awhisper/VKDevTool&quot;&gt;黑盒测试库&lt;/a&gt;想到的，这个测试库有个显示网络请求的模块，但是在自己项目里怎么也不行，上网查了各种资料总结了这篇文章。&lt;/p&gt;
+&lt;h1 id=&quot;NSURLProtocol&quot;&gt;&lt;a href=&quot;#NSURLProtocol&quot; class=&quot;headerlink&quot; title=&quot;NSURLProtocol&quot;&gt;&lt;/a&gt;NSURLProtocol&lt;/h1&gt;&lt;p&gt;NSURLProtocol可以让我们拦截程序中的一切网络请求，主要进行如下拦截处理:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;自定义请求 和 响应&lt;/li&gt;
+&lt;li&gt;过滤掉某些请求不让其发起、以及修改&lt;/li&gt;
+&lt;li&gt;提供 自定义的全局缓存 逻辑&lt;/li&gt;
+&lt;li&gt;重定向 网络请求&lt;/li&gt;
+&lt;li&gt;提供 HTTP Mocking (方便前期测试)&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+      <category term="iOS" scheme="jokewang.top/categories/iOS/"/>
+    
+    
+      <category term="基础知识" scheme="jokewang.top/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>iOS事件响应链</title>
+    <link href="jokewang.top/2016/08/24/iOS%E5%93%8D%E5%BA%94%E9%93%BE/"/>
+    <id>jokewang.top/2016/08/24/iOS响应链/</id>
+    <published>2016-08-24T01:55:36.000Z</published>
+    <updated>2016-08-24T01:59:05.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;系统如何获取到了用户进行了“单击”这一行为？&quot;&gt;&lt;a href=&quot;#系统如何获取到了用户进行了“单击”这一行为？&quot; class=&quot;headerlink&quot; title=&quot;系统如何获取到了用户进行了“单击”这一行为？&quot;&gt;&lt;/a&gt;系统如何获取到了用户进行了“单击”这一行为？&lt;/h1&gt;&lt;p&gt;操作系统把包含这些点击事件的信息包装成UITouch和UIEvent形式的实例，然后找到当前运行的程序，逐级寻找能够响应这个事件的对象，直到没有响应者响应。这一寻找的过程，被称作事件的响应链，如下图所示，不用的响应者以链式的方式寻找&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE.jpg&quot; width=&quot;40%&quot;&gt;&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt; &lt;/p&gt;
+&lt;h1 id=&quot;响应者&quot;&gt;&lt;a href=&quot;#响应者&quot; class=&quot;headerlink&quot; title=&quot;响应者&quot;&gt;&lt;/a&gt;响应者&lt;/h1&gt;&lt;p&gt;在iOS中，能够响应事件的对象都是UIResponder的子类对象。UIResponder提供了四个用户点击的回调方法，分别对应用户点击开始、移动、点击结束以及取消点击，其中只有在程序强制退出或者来电时，取消点击事件才会调用。&lt;br&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// Generally, all responders which do custom touch handling should override all four of these methods.&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// Your responder will receive either touchesEnded:withEvent: or touchesCancelled:withEvent: for each&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// touch it is handling (those touches it received in touchesBegan:withEvent:).&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// *** You must handle cancelled touches to ensure correct behavior in your application.  Failure to&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// do so is very likely to lead to incorrect behavior or crashes.&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)touchesBegan:(&lt;span class=&quot;built_in&quot;&gt;NSSet&lt;/span&gt;&amp;lt;&lt;span class=&quot;built_in&quot;&gt;UITouch&lt;/span&gt; *&amp;gt; *)touches withEvent:(&lt;span class=&quot;keyword&quot;&gt;nullable&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;UIEvent&lt;/span&gt; *)event;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)touchesMoved:(&lt;span class=&quot;built_in&quot;&gt;NSSet&lt;/span&gt;&amp;lt;&lt;span class=&quot;built_in&quot;&gt;UITouch&lt;/span&gt; *&amp;gt; *)touches withEvent:(&lt;span class=&quot;keyword&quot;&gt;nullable&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;UIEvent&lt;/span&gt; *)event;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)touchesEnded:(&lt;span class=&quot;built_in&quot;&gt;NSSet&lt;/span&gt;&amp;lt;&lt;span class=&quot;built_in&quot;&gt;UITouch&lt;/span&gt; *&amp;gt; *)touches withEvent:(&lt;span class=&quot;keyword&quot;&gt;nullable&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;UIEvent&lt;/span&gt; *)event;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)touchesCancelled:(&lt;span class=&quot;keyword&quot;&gt;nullable&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;NSSet&lt;/span&gt;&amp;lt;&lt;span class=&quot;built_in&quot;&gt;UITouch&lt;/span&gt; *&amp;gt; *)touches withEvent:(&lt;span class=&quot;keyword&quot;&gt;nullable&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;UIEvent&lt;/span&gt; *)event;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)touchesEstimatedPropertiesUpdated:(&lt;span class=&quot;built_in&quot;&gt;NSSet&lt;/span&gt; * _Nonnull)touches &lt;span class=&quot;built_in&quot;&gt;NS_AVAILABLE_IOS&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;9&lt;/span&gt;_1);&lt;span class=&quot;comment&quot;&gt;//9.1之后加入的3D触摸事件。&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;在自定义UIView为基类的控件时，我们可以重写这几个方法来进行点击回调。在回调中，我们可以看到方法接收两个参数，一个UITouch对象的集合，还有一个UIEvent对象。这两个参数分别代表的是点击对象和事件对象。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;事件对象&lt;br&gt;iOS使用UIEvent表示用户交互的事件对象，在UIEvent.h文件中，我们可以看到有一个UIEventType类型的属性，这个属性表示了当前的响应事件类型。分别有多点触控、摇一摇以及远程操作（在iOS9之后新增了3DTouch事件类型）。在一个用户点击事件处理过程中，UIEvent对象是唯一的&lt;/li&gt;
+&lt;li&gt;点击对象&lt;br&gt;UITouch表示单个点击，其类文件中存在枚举类型UITouchPhase的属性，用来表示当前点击的状态。这些状态包括点击开始、移动、停止不动、结束和取消五个状态。每次点击发生的时候，点击对象都放在一个集合中传入UIResponder的回调方法中，我们通过集合中对象获取用户点击的位置。其中通过&lt;code&gt;- (CGPoint)locationInView:(nullable UIView *)view&lt;/code&gt;获取当前点击坐标点，&lt;code&gt;- (CGPoint)previousLocationInView:(nullable UIView *)view&lt;/code&gt;获取上个点击位置的坐标点。&lt;br&gt;为了确认UIView确实是通过UIResponder的点击方法响应点击事件的，我创建了UIView的类别，并重写+ (void)load方法，使用method_swizzling的方式交换点击事件的实现&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;21&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;22&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;23&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;24&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;25&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;26&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;27&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;28&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;29&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;30&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;31&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;+ (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)load&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    Method origin = class_getInstanceMethod([&lt;span class=&quot;built_in&quot;&gt;UIView&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;], &lt;span class=&quot;keyword&quot;&gt;@selector&lt;/span&gt;(touchesBegan:withEvent:));&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    Method custom = class_getInstanceMethod([&lt;span class=&quot;built_in&quot;&gt;UIView&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;], &lt;span class=&quot;keyword&quot;&gt;@selector&lt;/span&gt;(lxd_touchesBegan:withEvent:));&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    method_exchangeImplementations(origin, custom);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    origin = class_getInstanceMethod([&lt;span class=&quot;built_in&quot;&gt;UIView&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;], &lt;span class=&quot;keyword&quot;&gt;@selector&lt;/span&gt;(touchesMoved:withEvent:));&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    custom = class_getInstanceMethod([&lt;span class=&quot;built_in&quot;&gt;UIView&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;], &lt;span class=&quot;keyword&quot;&gt;@selector&lt;/span&gt;(lxd_touchesMoved:withEvent:));&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    method_exchangeImplementations(origin, custom);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    origin = class_getInstanceMethod([&lt;span class=&quot;built_in&quot;&gt;UIView&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;], &lt;span class=&quot;keyword&quot;&gt;@selector&lt;/span&gt;(touchesEnded:withEvent:));&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    custom = class_getInstanceMethod([&lt;span class=&quot;built_in&quot;&gt;UIView&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;], &lt;span class=&quot;keyword&quot;&gt;@selector&lt;/span&gt;(lxd_touchesEnded:withEvent:));&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    method_exchangeImplementations(origin, custom);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)lxd_touchesBegan: (&lt;span class=&quot;built_in&quot;&gt;NSSet&lt;/span&gt;&amp;lt;&lt;span class=&quot;built_in&quot;&gt;UITouch&lt;/span&gt; *&amp;gt; *)touches withEvent: (&lt;span class=&quot;built_in&quot;&gt;UIEvent&lt;/span&gt; *)event&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSLog&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;@&quot;%@ --- begin&quot;&lt;/span&gt;, &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.class);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; lxd_touchesBegan: touches withEvent: event];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)lxd_touchesMoved: (&lt;span class=&quot;built_in&quot;&gt;NSSet&lt;/span&gt;&amp;lt;&lt;span class=&quot;built_in&quot;&gt;UITouch&lt;/span&gt; *&amp;gt; *)touches withEvent: (&lt;span class=&quot;built_in&quot;&gt;UIEvent&lt;/span&gt; *)event&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSLog&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;@&quot;%@ --- move&quot;&lt;/span&gt;, &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.class);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; lxd_touchesMoved: touches withEvent: event];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)lxd_touchesEnded: (&lt;span class=&quot;built_in&quot;&gt;NSSet&lt;/span&gt;&amp;lt;&lt;span class=&quot;built_in&quot;&gt;UITouch&lt;/span&gt; *&amp;gt; *)touches withEvent: (&lt;span class=&quot;built_in&quot;&gt;UIEvent&lt;/span&gt; *)event&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSLog&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;@&quot;%@ --- end&quot;&lt;/span&gt;, &lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;.class);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; lxd_touchesEnded: touches withEvent: event];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在新建的项目中，我分别创建了AView、BView、CView和DView四个UIView的子类，然后点击任意一个位置：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_2.jpeg&quot; width=&quot;40%&quot;&gt;&lt;/p&gt;
+&lt;p&gt;在我点击上图绿色视图的时候，控制台输出了下面的日志&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;CView --- begin&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;CView --- end&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;由此可见在我们点击UIView的时候，是通过touches相关的点击事件进行回调处理的。&lt;/p&gt;
+&lt;p&gt;除了touches回调的几个点击事件，手势UIGestureRecognizer对象也可以附加在view上，来实现其他丰富的手势事件。在view添加单击手势之后，原来的touchesEnded方法就无效了。最开始我一直认为view添加手势之后，原有的touches系列方法全部无效。但是在测试demo中，发现view添加手势之后，touchesBegan方法是有进行回调的，但是moved跟ended就没有进行回调。因此，在系统的touches事件处理中，在touchesBegan之后，应该是存在着一个调度后续事件（nextHandler）处理的方法，个人猜测事件调度的处理大致如下图示：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_3.jpeg&quot; width=&quot;40%&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;响应链传递&quot;&gt;&lt;a href=&quot;#响应链传递&quot; class=&quot;headerlink&quot; title=&quot;响应链传递&quot;&gt;&lt;/a&gt;响应链传递&lt;/h1&gt;&lt;p&gt;上面已经介绍了某个控件在接收到点击事件时的处理，那么系统是怎么通过用户点击的位置找到处理点击事件的view的呢？&lt;br&gt;在上文我们已经说过了系统通过不断查找下一个响应者来响应点击事件，而所有的可交互控件都是UIResponder直接或者间接的子类，那么我们是否可以在这个类的头文件中找到关键的属性呢？&lt;/p&gt;
+&lt;p&gt;正好存在着这么一个方法：&lt;code&gt;- (nullable UIResponder *)nextResponder&lt;/code&gt;，通过方法名我们不难发现这是获取当前view的下一个响应者，那么我们重写touchesBegan方法，逐级获取下一响应者，直到没有下一个响应者位置。相关代码如下：&lt;br&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)touchesBegan:(&lt;span class=&quot;built_in&quot;&gt;NSSet&lt;/span&gt;&amp;lt;&lt;span class=&quot;built_in&quot;&gt;UITouch&lt;/span&gt; *&amp;gt; *)touches withEvent:(&lt;span class=&quot;built_in&quot;&gt;UIEvent&lt;/span&gt; *)event&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;UIResponder&lt;/span&gt; * next = [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; nextResponder];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;NSMutableString&lt;/span&gt; * prefix = &lt;span class=&quot;string&quot;&gt;@&quot;&quot;&lt;/span&gt;.mutableCopy;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt; (next != &lt;span class=&quot;literal&quot;&gt;nil&lt;/span&gt;) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;built_in&quot;&gt;NSLog&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;@&quot;%@%@&quot;&lt;/span&gt;, prefix, [next &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;]);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        [prefix appendString: &lt;span class=&quot;string&quot;&gt;@&quot;--&quot;&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        next = [next nextResponder];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;    &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;控制台输出的所有下级事件响应者如下：&lt;br&gt;&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;AView&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;--UIView&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;----ViewController&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;------UIWindow&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;--------UIApplication&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;----------AppDelegate&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;虽然结果非常有层次，但是从系统逐级查找响应者的角度上来说，这个输出的顺序是刚好相反的。为什么会出现这种问题呢？我们可以看到输出中存在一个ViewController类，说明UIViewController也是UIResponder的子类。但是我们可以发现，controller是一个view的管理者，即便它是响应链的成员之一，但是按照逻辑来说，控制器不应该是系统查找对象之一，通过nextResponder方法查找的这个思路是不正确的。&lt;br&gt;后来，发现在UIView的头文件中存在这么两个方法，分别返回UIView和BOOL类型的方法：&lt;br&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;nullable&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;UIView&lt;/span&gt; *)hitTest:(&lt;span class=&quot;built_in&quot;&gt;CGPoint&lt;/span&gt;)point withEvent:(&lt;span class=&quot;keyword&quot;&gt;nullable&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;UIEvent&lt;/span&gt; *)event;   &lt;span class=&quot;comment&quot;&gt;// recursively calls -pointInside:withEvent:. point is in the receiver&#39;s coordinate system&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;built_in&quot;&gt;BOOL&lt;/span&gt;)pointInside:(&lt;span class=&quot;built_in&quot;&gt;CGPoint&lt;/span&gt;)point withEvent:(&lt;span class=&quot;keyword&quot;&gt;nullable&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;UIEvent&lt;/span&gt; *)event;   &lt;span class=&quot;comment&quot;&gt;// default returns YES if point is in bounds&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;根据方法名，一个是根据点击坐标返回事件是否发生在本视图以内，另一个方法是返回响应点击事件的对象。通过这两个方法，我们可以猜到，系统在收到点击事件的时候通过不断遍历当前视图上的子视图的这些方法，获取下一个响应的视图。因此，继续通过method_swizzling方式修改这两个方法的实现，并且测试输出如下:&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;21&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;22&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;UIStatusBarWindow can answer 1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;UIStatusBar can answer 0&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;UIStatusBarForegroundView can answer 0&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;UIStatusBarServiceItemView can answer 0&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;UIStatusBarDataNetworkItemView can answer 0&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;UIStatusBarBatteryItemView can answer 0&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;UIStatusBarTimeItemView can answer 0&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;hit view: UIStatusBar&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;hit view: UIStatusBarWindow&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;UIWindow can answer 1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;UIView can answer 1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;hit view: _UILayoutGuide&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;hit view: _UILayoutGuide&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;AView can answer 1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;DView can answer 0&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;hit view: DView&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;BView can answer 0&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;hit view: BView&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;hit view: AView&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;hit view: UIView&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;hit view: UIWindow&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;......  //下面是touches方法的输出&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;最上面的UIStatusBar开头的类型大家可能没见过，但是不妨碍我们猜到这是状态栏相关的一些视图，具体可以查找苹果的文档中心（Xcode中快捷键shift+command+0打开）。从输出中不难看出系统先调用&lt;code&gt;pointInSide: WithEvent:&lt;/code&gt;判断当前视图以及这些视图的子视图是否能接收这次点击事件，然后在调用&lt;code&gt;hitTest: withEvent:&lt;/code&gt;依次获取处理这个事件的所有视图对象，在获取所有的可处理事件对象后，开始调用这些对象的touches回调方法&lt;/p&gt;
+&lt;p&gt;通过输出的方法调用，我们可以看到响应查找的顺序是： UIStatusBar相关的视图 -&amp;gt; UIWindow -&amp;gt; UIView -&amp;gt; AView -&amp;gt; DView -&amp;gt; BView（系统在事件链传递的过程中一定会遍历所有的子视图判断是否能够响应点击事件），以本文demo为例，我们可以得出事件响应链查找的图示如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_4.jpeg&quot; width=&quot;40%&quot;&gt;&lt;/p&gt;
+&lt;p&gt;那么在上面的查找响应者流程完成之后，系统会将本次事件中的点击转换成UITouch对象，然后将这些对象和UIEvent类型的事件对象传递给touchesBegan方法&lt;br&gt;不仅如此，从上面输出的nextResponder来看，所有的响应者都是在查找中返回可响应点击的视图。因此，我们可以推测出UIApplication对象维护着自己的一个响应者栈，当&lt;code&gt;pointInSide: withEvent:&lt;/code&gt;返回yes的时候，响应者入栈。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_5.jpeg&quot; width=&quot;40%&quot;&gt;&lt;/p&gt;
+&lt;p&gt;栈顶的响应者作为最优先处理事件的对象，假设AView不处理事件，那么出栈，移交给UIView，以此下去，直到事件得到了处理或者到达AppDelegate后依旧未响应，事件被摒弃为止。通过这个机制我们也可以看到controller是响应者栈中的例外，即便没有&lt;code&gt;pointInSide: withEvent:&lt;/code&gt;的方法返回可响应，controller依旧能够入栈成为UIView的下一个响应者。&lt;/p&gt;
+&lt;h1 id=&quot;响应链应用&quot;&gt;&lt;a href=&quot;#响应链应用&quot; class=&quot;headerlink&quot; title=&quot;响应链应用&quot;&gt;&lt;/a&gt;响应链应用&lt;/h1&gt;&lt;p&gt;既然已经知道了系统是怎么获取响应视图的流程了，那么我们可以通过重写查找事件处理者的方法来实现不规则形状点击。最常见的不规则视图就是圆形视图，在demo中我设置view的宽高为200，那么重写方法事件如下:&lt;br&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;built_in&quot;&gt;BOOL&lt;/span&gt;)pointInside:(&lt;span class=&quot;built_in&quot;&gt;CGPoint&lt;/span&gt;)point withEvent:(&lt;span class=&quot;built_in&quot;&gt;UIEvent&lt;/span&gt; *)event&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;CGFloat&lt;/span&gt; halfWidth = &lt;span class=&quot;number&quot;&gt;100&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;CGFloat&lt;/span&gt; xOffset = point.x - &lt;span class=&quot;number&quot;&gt;100&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;CGFloat&lt;/span&gt; yOffset = point.y - &lt;span class=&quot;number&quot;&gt;100&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;CGFloat&lt;/span&gt; radius = sqrt(xOffset * xOffset + yOffset * yOffset);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; radius &amp;lt;= halfWidth;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_6.gif&quot; width=&quot;40%&quot;&gt;&lt;/p&gt;
+&lt;p&gt;根据view找到对应的controller:&lt;/p&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;inline&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;UIViewController&lt;/span&gt;* &lt;span class=&quot;built_in&quot;&gt;UIViewParentController&lt;/span&gt;(&lt;span class=&quot;built_in&quot;&gt;UIView&lt;/span&gt; *view)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;UIResponder&lt;/span&gt; *responder=view;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;while&lt;/span&gt; ([responder isKindOfClass:[&lt;span class=&quot;built_in&quot;&gt;UIView&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;]])&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        responder=[responder nextResponder];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;   &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; (&lt;span class=&quot;built_in&quot;&gt;UIViewController&lt;/span&gt; *)responder;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;系统如何获取到了用户进行了“单击”这一行为？&quot;&gt;&lt;a href=&quot;#系统如何获取到了用户进行了“单击”这一行为？&quot; class=&quot;headerlink&quot; title=&quot;系统如何获取到了用户进行了“单击”这一行为？&quot;&gt;&lt;/a&gt;系统如何获取到了用户进行了“单击”这一行为？&lt;/h1&gt;&lt;p&gt;操作系统把包含这些点击事件的信息包装成UITouch和UIEvent形式的实例，然后找到当前运行的程序，逐级寻找能够响应这个事件的对象，直到没有响应者响应。这一寻找的过程，被称作事件的响应链，如下图所示，不用的响应者以链式的方式寻找&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE.jpg&quot; width = &quot;40%&quot; /&gt;&lt;br&gt;
+    
+    </summary>
+    
+      <category term="iOS" scheme="jokewang.top/categories/iOS/"/>
+    
+    
+      <category term="基础知识" scheme="jokewang.top/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>runtime模型到模型赋值</title>
+    <link href="jokewang.top/2016/08/24/runtime%E6%A8%A1%E5%9E%8B%E5%88%B0%E6%A8%A1%E5%9E%8B%E8%B5%8B%E5%80%BC/"/>
+    <id>jokewang.top/2016/08/24/runtime模型到模型赋值/</id>
+    <published>2016-08-24T01:05:28.000Z</published>
+    <updated>2016-08-24T01:05:28.000Z</updated>
+    
+    <content type="html">&lt;p&gt;需求：两个同样的界面，同样的功能，只因为是不一个入口，接口不一样。接口不一样就算了，接口下来的JSON的key都不一样。我又懒的手动赋值。后来发现这样一个方法&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt; 
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;21&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;22&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;23&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;24&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;25&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;26&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;27&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;28&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;29&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;30&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;31&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;-(talkuser*)changeModle:(&lt;span class=&quot;keyword&quot;&gt;id&lt;/span&gt;)model&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; count;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;objc_property_t *properties=class_copyPropertyList([model &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt;], &amp;amp;count);&lt;span class=&quot;comment&quot;&gt;//获取传进来模型的Property列表&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;talkuser *backModel=[[talkuser alloc]init];&lt;span class=&quot;comment&quot;&gt;//创建目标模型&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt;(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; i =&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;; i &amp;lt; count; i++) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;objc_property_t property = properties[i];&lt;span class=&quot;comment&quot;&gt;//从Property列表中取Property属性&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//获取属性的名称C语言字符串&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;char&lt;/span&gt; *cName =property_getName(property);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//转换为Objective C字符串&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; *name = [&lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; stringWithCString:cName encoding:&lt;span class=&quot;built_in&quot;&gt;NSUTF8StringEncoding&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;id&lt;/span&gt; value= [model valueForKey:name];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;[backModel setValue:value forKey:name];&lt;span class=&quot;comment&quot;&gt;//赋值&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;free(propertys);&lt;span class=&quot;comment&quot;&gt;//用完释放掉列表,按住option+左键看class_copyPropertyList方法会提示&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;returnbackModel;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;需求：两个同样的界面，同样的功能，只因为是不一个入口，接口不一样。接口不一样就算了，接口下来的JSON的key都不一样。我又懒的手动赋值。后来发现这样一个方法&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="iOS" scheme="jokewang.top/categories/iOS/"/>
+    
+    
+      <category term="runtime" scheme="jokewang.top/tags/runtime/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>科目一考试通过</title>
+    <link href="jokewang.top/2016/08/08/%E7%A7%91%E7%9B%AE%E4%B8%80%E8%80%83%E8%AF%95%E9%80%9A%E8%BF%87/"/>
+    <id>jokewang.top/2016/08/08/科目一考试通过/</id>
+    <published>2016-08-08T06:11:34.000Z</published>
+    <updated>2016-08-08T06:19:30.000Z</updated>
+    
+    <content type="html">&lt;p&gt;前几个月看&lt;a href=&quot;http://awhisper.github.io/2016/07/10/CarInMyLife/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;味精&lt;/a&gt;大神买车的文章，激起了我买车的欲望。于是报名，看车。&lt;br&gt;车已经选好了 &lt;strong&gt;速腾1.4T自动豪华版&lt;/strong&gt; 本来想买1.6最便宜的自动款，去4S店看了看，差好多啊。。。加钱！（打肿脸充胖子）。关键就是驾照了。&lt;/p&gt;
+&lt;p&gt;7.27报名，今天科目一过了。恩，还算可以。考了满分！！！   希望能尽快进行科目二。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;前几个月看&lt;a href=&quot;http://awhisper.github.io/2016/07/10/CarInMyLife/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;味精&lt;/a&gt;大神买车的文章，激起了我买车的欲望。于是报名，看车。&lt;br&gt;车已经选好
+    
+    </summary>
+    
+      <category term="生活" scheme="jokewang.top/categories/life/"/>
+    
+    
+      <category term="闲聊" scheme="jokewang.top/tags/%E9%97%B2%E8%81%8A/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>scrollview滚动结束的监听</title>
+    <link href="jokewang.top/2016/07/28/scrollView%E7%9B%91%E5%90%AC%E6%BB%9A%E5%8A%A8%E7%BB%93%E6%9D%9F/"/>
+    <id>jokewang.top/2016/07/28/scrollView监听滚动结束/</id>
+    <published>2016-07-28T08:47:10.000Z</published>
+    <updated>2016-08-24T01:05:44.000Z</updated>
+    
+    <content type="html">&lt;p&gt;在iOS中使用UITableView的时候，有时候需要检测UITableView的滚动动画是否结束，iOS没有直接提供这样的API。 先看一下现有的几个方法是怎样的：&lt;br&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)scrollViewDidEndDragging:(&lt;span class=&quot;built_in&quot;&gt;UIScrollView&lt;/span&gt; *)scrollView willDecelerate:(&lt;span class=&quot;built_in&quot;&gt;BOOL&lt;/span&gt;)decelerate;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;这个方法表示手指离开了scrollview，第二个参数用于判断滚动速度是否慢慢下降。&lt;/p&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)scrollViewDidEndDecelerating:(&lt;span class=&quot;built_in&quot;&gt;UIScrollView&lt;/span&gt; *)scrollView;      &lt;span class=&quot;comment&quot;&gt;// called when scroll view grinds to a halt&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这个方法看上去挺像我们要找的：停止减速。但是，从注释看，“嘎然而止”的时候才会被调用，很明显，我们要的是“自然停止”时被调的方法。&lt;/p&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)scrollViewDidEndScrollingAnimation:(&lt;span class=&quot;built_in&quot;&gt;UIScrollView&lt;/span&gt; *)scrollView; &lt;span class=&quot;comment&quot;&gt;// called when setContentOffset scrollRectVisible:animated: finishes. not called if not animating&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这个是指scrollview停止滚动动画，嗯，这下是我们想要的了吧！&lt;/p&gt;
+&lt;p&gt;抱歉，不是！！！ 试验一下就会发现，无论怎么滚动怎么停止，这个方法都不会被调！处分用代码的方式调用了setContentOffset scrollRectVisible:animated: finishes，但是，我们手指触发试图滚动是不会调该方法的……&lt;br&gt;&lt;a id=&quot;more&quot;&gt;&lt;/a&gt; &lt;/p&gt;
+&lt;p&gt;###解决方法&lt;br&gt;我们自己主动去调scrollViewDidEndScrollingAnimation。&lt;/p&gt;
+&lt;p&gt;原理：在- (void)scrollViewDidScroll:(UIScrollView *)scrollView内，创建一个异步调用，等待0.1秒后调scrollViewDidEndScrollingAnimation。由于scrollViewDidScroll会不断被调用，再次触发时取消上一次的异步请求。等到不再滚动时，最后一次的请求不会被取消，最终会跑到scrollViewDidScroll，然后，添加想要在滚动停止时调用的代码即可。&lt;/p&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;-(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)scrollViewDidScroll:(&lt;span class=&quot;built_in&quot;&gt;UIScrollView&lt;/span&gt; *)sender&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;built_in&quot;&gt;NSObject&lt;/span&gt; cancelPreviousPerformRequestsWithTarget:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt; performSelector:&lt;span class=&quot;keyword&quot;&gt;@selector&lt;/span&gt;(scrollViewDidEndScrollingAnimation:) withObject:&lt;span class=&quot;literal&quot;&gt;nil&lt;/span&gt; afterDelay:&lt;span class=&quot;built_in&quot;&gt;CGFLOAT_MIN&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;-(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)scrollViewDidEndScrollingAnimation:(&lt;span class=&quot;built_in&quot;&gt;UIScrollView&lt;/span&gt; *)scrollView&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [&lt;span class=&quot;built_in&quot;&gt;NSObject&lt;/span&gt; cancelPreviousPerformRequestsWithTarget:&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//这里添加你的逻辑，比如，触发上拉加载更多&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;&lt;a href=&quot;http://blog.lessfun.com/blog/2013/12/06/detect-uiscrollview-did-end-scrolling-animate/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;参考链接&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在iOS中使用UITableView的时候，有时候需要检测UITableView的滚动动画是否结束，iOS没有直接提供这样的API。 先看一下现有的几个方法是怎样的：&lt;br&gt;&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)scrollViewDidEndDragging:(&lt;span class=&quot;built_in&quot;&gt;UIScrollView&lt;/span&gt; *)scrollView willDecelerate:(&lt;span class=&quot;built_in&quot;&gt;BOOL&lt;/span&gt;)decelerate;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;这个方法表示手指离开了scrollview，第二个参数用于判断滚动速度是否慢慢下降。&lt;/p&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)scrollViewDidEndDecelerating:(&lt;span class=&quot;built_in&quot;&gt;UIScrollView&lt;/span&gt; *)scrollView;      &lt;span class=&quot;comment&quot;&gt;// called when scroll view grinds to a halt&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这个方法看上去挺像我们要找的：停止减速。但是，从注释看，“嘎然而止”的时候才会被调用，很明显，我们要的是“自然停止”时被调的方法。&lt;/p&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)scrollViewDidEndScrollingAnimation:(&lt;span class=&quot;built_in&quot;&gt;UIScrollView&lt;/span&gt; *)scrollView; &lt;span class=&quot;comment&quot;&gt;// called when setContentOffset scrollRectVisible:animated: finishes. not called if not animating&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这个是指scrollview停止滚动动画，嗯，这下是我们想要的了吧！&lt;/p&gt;
+&lt;p&gt;抱歉，不是！！！ 试验一下就会发现，无论怎么滚动怎么停止，这个方法都不会被调！处分用代码的方式调用了setContentOffset scrollRectVisible:animated: finishes，但是，我们手指触发试图滚动是不会调该方法的……&lt;br&gt;
+    
+    </summary>
+    
+      <category term="iOS" scheme="jokewang.top/categories/iOS/"/>
+    
+    
+      <category term="奇巧淫技" scheme="jokewang.top/tags/%E5%A5%87%E5%B7%A7%E6%B7%AB%E6%8A%80/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>RSA加密</title>
+    <link href="jokewang.top/2016/07/22/RSA%E5%8A%A0%E5%AF%86/"/>
+    <id>jokewang.top/2016/07/22/RSA加密/</id>
+    <published>2016-07-22T03:21:31.000Z</published>
+    <updated>2016-07-22T09:08:22.000Z</updated>
+    
+    <content type="html">&lt;p&gt;很长时间搞不清楚RSA到底是用公钥加密还是私钥加密，看了一些文章发现是下面这样：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;公钥加密私钥解密是密送，保证消息即使公开也只有私钥持有者能读懂。&lt;br&gt;私钥加密公钥解密是签名，保证消息来源是私钥持有者。&lt;/p&gt;
+&lt;/blockquote&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;很长时间搞不清楚RSA到底是用公钥加密还是私钥加密，看了一些文章发现是下面这样：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;公钥加密私钥解密是密送，保证消息即使公开也只有私钥持有者能读懂。&lt;br&gt;私钥加密公钥解密是签名，保证消息来源是私钥持有者。&lt;/p&gt;
+&lt;/blockquo
+    
+    </summary>
+    
+      <category term="技术" scheme="jokewang.top/categories/technology/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>真·情怀</title>
+    <link href="jokewang.top/2016/07/22/%E7%BD%91%E6%98%93%E4%BA%92%E8%81%94%E7%BD%91%E6%8B%9B%E8%81%98%E4%BA%86/"/>
+    <id>jokewang.top/2016/07/22/网易互联网招聘了/</id>
+    <published>2016-07-22T00:41:17.000Z</published>
+    <updated>2016-07-22T00:42:11.000Z</updated>
+    
+    <content type="html">&lt;p&gt;只能说网易的棋下的不错，中国最良心的互联网企业。&lt;/p&gt;
+&lt;iframe frameborder=&quot;no&quot; border=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; width=&quot;330&quot; height=&quot;86&quot; src=&quot;https://music.163.com/outchain/player?type=2&amp;id=421885610&amp;auto=0&amp;height=66&quot;&gt;&lt;/iframe&gt;</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;只能说网易的棋下的不错，中国最良心的互联网企业。&lt;/p&gt;
+&lt;iframe frameborder=&quot;no&quot; border=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; width=&quot;330&quot; height=&quot;86&quot; src=&quot;https://mu
+    
+    </summary>
+    
+      <category term="生活" scheme="jokewang.top/categories/life/"/>
+    
+    
+      <category term="音乐" scheme="jokewang.top/tags/%E9%9F%B3%E4%B9%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>红花ノ乙女呗</title>
+    <link href="jokewang.top/2016/07/13/%E7%BA%A2%E8%8A%B1%E3%83%8E%E4%B9%99%E5%A5%B3%E5%91%97/"/>
+    <id>jokewang.top/2016/07/13/红花ノ乙女呗/</id>
+    <published>2016-07-13T09:41:30.000Z</published>
+    <updated>2016-07-18T01:05:21.000Z</updated>
+    
+    <content type="html">&lt;p&gt;吾是花儿么？是蝶抑或是鬼？&lt;/p&gt;
+&lt;iframe frameborder=&quot;no&quot; border=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; width=&quot;330&quot; height=&quot;86&quot; src=&quot;https://music.163.com/outchain/player?type=2&amp;id=4929317&amp;auto=0&amp;height=66&quot;&gt;&lt;/iframe&gt;</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;吾是花儿么？是蝶抑或是鬼？&lt;/p&gt;
+&lt;iframe frameborder=&quot;no&quot; border=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; width=&quot;330&quot; height=&quot;86&quot; src=&quot;https://music.163.com
+    
+    </summary>
+    
+      <category term="生活" scheme="jokewang.top/categories/life/"/>
+    
+    
+      <category term="音乐" scheme="jokewang.top/tags/%E9%9F%B3%E4%B9%90/"/>
+    
+  </entry>
+  
+</feed>

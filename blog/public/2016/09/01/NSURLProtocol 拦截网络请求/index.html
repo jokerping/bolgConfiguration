@@ -1,0 +1,1304 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="基础知识," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="幻想乡" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="写在前面的话这篇文章是看来敬哥的黑盒测试库想到的，这个测试库有个显示网络请求的模块，但是在自己项目里怎么也不行，上网查了各种资料总结了这篇文章。
+NSURLProtocolNSURLProtocol可以让我们拦截程序中的一切网络请求，主要进行如下拦截处理:
+
+自定义请求 和 响应
+过滤掉某些请求不让其发起、以及修改
+提供 自定义的全局缓存 逻辑
+重定向 网络请求
+提供 HTTP Mocking (">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NSURLProtocol 拦截网络请求">
+<meta property="og:url" content="jokewang.top/2016/09/01/NSURLProtocol 拦截网络请求/index.html">
+<meta property="og:site_name" content="幻想乡">
+<meta property="og:description" content="写在前面的话这篇文章是看来敬哥的黑盒测试库想到的，这个测试库有个显示网络请求的模块，但是在自己项目里怎么也不行，上网查了各种资料总结了这篇文章。
+NSURLProtocolNSURLProtocol可以让我们拦截程序中的一切网络请求，主要进行如下拦截处理:
+
+自定义请求 和 响应
+过滤掉某些请求不让其发起、以及修改
+提供 自定义的全局缓存 逻辑
+重定向 网络请求
+提供 HTTP Mocking (">
+<meta property="og:updated_time" content="2016-09-05T01:51:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NSURLProtocol 拦截网络请求">
+<meta name="twitter:description" content="写在前面的话这篇文章是看来敬哥的黑盒测试库想到的，这个测试库有个显示网络请求的模块，但是在自己项目里怎么也不行，上网查了各种资料总结了这篇文章。
+NSURLProtocolNSURLProtocol可以让我们拦截程序中的一切网络请求，主要进行如下拦截处理:
+
+自定义请求 和 响应
+过滤掉某些请求不让其发起、以及修改
+提供 自定义的全局缓存 逻辑
+重定向 网络请求
+提供 HTTP Mocking (">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '6303452549810750000',
+      author: '神'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="jokewang.top/2016/09/01/NSURLProtocol 拦截网络请求/"/>
+
+
+
+
+
+  <title>NSURLProtocol 拦截网络请求 | 幻想乡</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?5fba1dd1e3777f9d1cec4cd0202fb130";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">幻想乡</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-message">
+          <a href="/message" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            留言
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocapitalize="off" autocomplete="off" autocorrect="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="jokewang.top/2016/09/01/NSURLProtocol 拦截网络请求/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王志平">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://www.qq1234.org/uploads/allimg/141208/3_141208212705_2.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="幻想乡">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                NSURLProtocol 拦截网络请求
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-09-01T17:38:10+08:00">
+                2016-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2016/09/01/NSURLProtocol 拦截网络请求/" class="leancloud_visitors" data-flag-title="NSURLProtocol 拦截网络请求">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="写在前面的话"><a href="#写在前面的话" class="headerlink" title="写在前面的话"></a>写在前面的话</h1><p>这篇文章是看来<a href="http://awhisper.github.io/" target="_blank" rel="external">敬哥</a>的<a href="https://github.com/Awhisper/VKDevTool" target="_blank" rel="external">黑盒测试库</a>想到的，这个测试库有个显示网络请求的模块，但是在自己项目里怎么也不行，上网查了各种资料总结了这篇文章。</p>
+<h1 id="NSURLProtocol"><a href="#NSURLProtocol" class="headerlink" title="NSURLProtocol"></a>NSURLProtocol</h1><p>NSURLProtocol可以让我们拦截程序中的一切网络请求，主要进行如下拦截处理:</p>
+<ul>
+<li>自定义请求 和 响应</li>
+<li>过滤掉某些请求不让其发起、以及修改</li>
+<li>提供 自定义的全局缓存 逻辑</li>
+<li>重定向 网络请求</li>
+<li>提供 HTTP Mocking (方便前期测试)</li>
+</ul>
+<a id="more"></a>
+<h1 id="如何拦截网络请求"><a href="#如何拦截网络请求" class="headerlink" title="如何拦截网络请求?"></a>如何拦截网络请求?</h1><h2 id="编写NSURLProtocol子类"><a href="#编写NSURLProtocol子类" class="headerlink" title="编写NSURLProtocol子类"></a>编写NSURLProtocol子类</h2><h3 id="重写方法一-请求的过滤，筛选出需要进行处理的请求"><a href="#重写方法一-请求的过滤，筛选出需要进行处理的请求" class="headerlink" title="重写方法一 请求的过滤，筛选出需要进行处理的请求"></a>重写方法一 请求的过滤，筛选出需要进行处理的请求</h3><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">+ (<span class="built_in">BOOL</span>)canInitWithRequest:(<span class="built_in">NSURLRequest</span> *)request</div><div class="line">&#123;</div><div class="line"><span class="meta">#ifdef VKDevMode</span></div><div class="line">   </div><div class="line">    <span class="comment">//只处理http和https请求</span></div><div class="line">    <span class="built_in">NSString</span> *scheme = [[request URL] scheme];</div><div class="line">    <span class="keyword">if</span> ( ([scheme caseInsensitiveCompare:<span class="string">@"http"</span>] == <span class="built_in">NSOrderedSame</span> ||</div><div class="line">          [scheme caseInsensitiveCompare:<span class="string">@"https"</span>] == <span class="built_in">NSOrderedSame</span>))</div><div class="line">    &#123;</div><div class="line">            <span class="comment">//看看是否已经处理过了，防止无限循环</span></div><div class="line">         <span class="keyword">if</span> ([<span class="built_in">NSURLProtocol</span> propertyForKey:VKURLProtocolHandledKey inRequest:request])</div><div class="line">           &#123;</div><div class="line">               <span class="keyword">return</span> <span class="literal">NO</span>;</div><div class="line">           &#125;</div><div class="line">        </div><div class="line">        <span class="keyword">return</span> <span class="literal">YES</span>;</div><div class="line">    &#125;</div><div class="line"><span class="meta">#endif</span></div><div class="line">    <span class="keyword">return</span> <span class="literal">NO</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个方法指明你是否要处理request，如果不打算处理的话返回NO就行，系统会使用默认的URL加载系统处理request，如果返回YES,URL Loading System会将request的处理操作交给你的urlProtocol。上面的代码我们只处理了http和https请求(你也可以拦截ftp等请求),通常我们的接口中都会包含特定的字符串，将它设置为你项目中对应的接口字段即可。还有一点需要注意，我们不能总是返回YES，这样会导致无限循环，(因为一个请求在被拦截处理过程中，也会发起一个请求) 我们可以通过+ (void)setProperty:(id)value forKey:(NSString <em>)key inRequest:(NSMutableURLRequest </em>)request方法来标记request已经被处理过，如果通过+ (nullable id)propertyForKey:(NSString <em>)key inRequest:(NSURLRequest </em>)request方法获取到已经处理过该request，则返回NO。</p>
+<h3 id="重写方法二、请求重定向、修改请求头"><a href="#重写方法二、请求重定向、修改请求头" class="headerlink" title="重写方法二、请求重定向、修改请求头"></a>重写方法二、请求重定向、修改请求头</h3><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">+ (<span class="built_in">NSURLRequest</span> *) canonicalRequestForRequest:(<span class="built_in">NSURLRequest</span> *)request &#123;</div><div class="line">    <span class="keyword">return</span> request;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="重写方法三、让被拦截的请求执行"><a href="#重写方法三、让被拦截的请求执行" class="headerlink" title="重写方法三、让被拦截的请求执行"></a>重写方法三、让被拦截的请求执行</h3><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">-(<span class="keyword">void</span>)startLoading&#123;</div><div class="line">    <span class="comment">//打标签，防止无限循环</span></div><div class="line">    </div><div class="line">    <span class="built_in">NSMutableURLRequest</span> *mutableReqeust = [[<span class="keyword">self</span> request] mutableCopy];</div><div class="line">    </div><div class="line">    [<span class="built_in">NSURLProtocol</span> setProperty:@YES forKey:VKURLProtocolHandledKey inRequest:mutableReqeust];</div><div class="line"><span class="meta">#pragma clang diagnostic push</span></div><div class="line"><span class="meta">#pragma clang diagnostic ignored <span class="meta-string">"-Wdeprecated-declarations"</span></span></div><div class="line">    <span class="keyword">self</span>.connection = [<span class="built_in">NSURLConnection</span> connectionWithRequest:mutableReqeust delegate:<span class="keyword">self</span>];</div><div class="line"><span class="meta">#pragma clang diagnostic pop</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="重写方法四、取消执行请求"><a href="#重写方法四、取消执行请求" class="headerlink" title="重写方法四、取消执行请求"></a>重写方法四、取消执行请求</h3><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">-(<span class="keyword">void</span>)stopLoading&#123;</div><div class="line">    [<span class="keyword">self</span>.connection cancel];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="重写方法五、可用来使用缓存数据结束此次网络请求"><a href="#重写方法五、可用来使用缓存数据结束此次网络请求" class="headerlink" title="重写方法五、可用来使用缓存数据结束此次网络请求"></a>重写方法五、可用来使用缓存数据结束此次网络请求</h3><p>如果不考虑自定义缓存逻辑，可以不重写此方法<br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">+(<span class="built_in">BOOL</span>)requestIsCacheEquivalent:(<span class="built_in">NSURLRequest</span> *)a toRequest:(<span class="built_in">NSURLRequest</span> *)b</div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> [<span class="keyword">super</span> requestIsCacheEquivalent:a toRequest:b];</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="demo1-自定义NSURLProtol拦截请求后进行处理，然后使用NSURLSession继续执行网络请求"><a href="#demo1-自定义NSURLProtol拦截请求后进行处理，然后使用NSURLSession继续执行网络请求" class="headerlink" title="demo1 自定义NSURLProtol拦截请求后进行处理，然后使用NSURLSession继续执行网络请求"></a>demo1 自定义NSURLProtol拦截请求后进行处理，然后使用NSURLSession继续执行网络请求</h3><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#import <span class="meta-string">&lt;Foundation/Foundation.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MySessionURLProtocol</span> : <span class="title">NSURLProtocol</span></span></div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#import <span class="meta-string">"MySessionURLProtocol.h"</span></span></div><div class="line"></div><div class="line"><span class="comment">//防止循环拦截的标识</span></div><div class="line"><span class="meta">#define protocolKey @<span class="meta-string">"SessionProtocolKey"</span></span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MySessionURLProtocol</span> ()&lt;<span class="title">NSURLSessionDataDelegate</span>&gt;</span></div><div class="line"></div><div class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSURLSession</span> * session;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MySessionURLProtocol</span></span></div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> *  是否拦截处理指定的请求</div><div class="line"> *</div><div class="line"> *  @param request 指定的请求</div><div class="line"> *</div><div class="line"> *  @return 返回YES表示要拦截处理，返回NO表示不拦截处理</div><div class="line"> */</div><div class="line">+ (<span class="built_in">BOOL</span>)canInitWithRequest:(<span class="built_in">NSURLRequest</span> *)request &#123;</div><div class="line">    </div><div class="line">    <span class="comment">/*</span></div><div class="line">     防止无限循环，因为一个请求在被拦截处理过程中，也会发起一个请求，这样又会走到这里，如果不进行处理，就会造成无限循环</div><div class="line">     如果已经拦截处理了，就不再进行拦截了，直接让其发起网络请求.</div><div class="line">     */</div><div class="line">    <span class="keyword">if</span> ([<span class="built_in">NSURLProtocol</span> propertyForKey:protocolKey inRequest:request]) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="literal">NO</span>;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">// URL的全路径字符串</span></div><div class="line">    <span class="built_in">NSString</span> * url = request.URL.absoluteString;</div><div class="line">    </div><div class="line">  <span class="comment">//只处理http和https请求</span></div><div class="line">  <span class="built_in">NSString</span> *scheme = [[request URL] scheme];</div><div class="line">  <span class="keyword">if</span> ( ([scheme caseInsensitiveCompare:<span class="string">@"http"</span>] == <span class="built_in">NSOrderedSame</span> ||</div><div class="line">     [scheme caseInsensitiveCompare:<span class="string">@"https"</span>] == <span class="built_in">NSOrderedSame</span>))</div><div class="line">    &#123;</div><div class="line">      <span class="keyword">return</span> <span class="literal">YES</span>;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="keyword">return</span> <span class="literal">NO</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> *  如果需要对请求进行重定向，添加指定头部等操作，可以在该方法中进行</div><div class="line"> *</div><div class="line"> *  @param request 原请求</div><div class="line"> *</div><div class="line"> *  @return 修改后的请求</div><div class="line"> */</div><div class="line">+ (<span class="built_in">NSURLRequest</span> *)canonicalRequestForRequest:(<span class="built_in">NSURLRequest</span> *)request &#123;</div><div class="line">    </div><div class="line">    <span class="comment">// 修改了请求的头部信息</span></div><div class="line">    <span class="built_in">NSMutableURLRequest</span> * mutableReq = [request mutableCopy];</div><div class="line">    </div><div class="line">    <span class="built_in">NSMutableDictionary</span> * headers = [mutableReq.allHTTPHeaderFields mutableCopy];</div><div class="line">    [headers setObject:<span class="string">@"BBBB"</span> forKey:<span class="string">@"Key2"</span>];</div><div class="line">    </div><div class="line">    mutableReq.allHTTPHeaderFields = headers;</div><div class="line">    </div><div class="line">    <span class="comment">//返回修改请求头后的Request</span></div><div class="line">    <span class="keyword">return</span> [mutableReq <span class="keyword">copy</span>];</div><div class="line">    </div><div class="line">    <span class="comment">//还可以修改Request.url进行重定向</span></div><div class="line">    <span class="comment">//...</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> *  开始加载，在该方法中，加载一个请求</div><div class="line"> */</div><div class="line">- (<span class="keyword">void</span>)startLoading &#123;</div><div class="line"></div><div class="line">  </div><div class="line">    <span class="built_in">NSMutableURLRequest</span> * request = [<span class="keyword">self</span>.request mutableCopy];</div><div class="line">    </div><div class="line">    <span class="comment">// 标记当前传入的Request已经被拦截处理过，</span></div><div class="line">    <span class="comment">//防止在最开始又继续拦截处理</span></div><div class="line">    [<span class="built_in">NSURLProtocol</span> setProperty:@(<span class="literal">YES</span>) forKey:protocolKey inRequest:request];</div><div class="line">    </div><div class="line">    <span class="comment">//如下使用NSURLSession让拦截的请求进行请求网络</span></div><div class="line">    <span class="built_in">NSURLSessionConfiguration</span> * config = [<span class="built_in">NSURLSessionConfiguration</span> defaultSessionConfiguration];</div><div class="line">    <span class="keyword">self</span>.session = [<span class="built_in">NSURLSession</span> sessionWithConfiguration:config delegate:<span class="keyword">self</span> delegateQueue:[<span class="built_in">NSOperationQueue</span> mainQueue]];</div><div class="line">    <span class="built_in">NSURLSessionDataTask</span> * task = [<span class="keyword">self</span>.session dataTaskWithRequest:request];</div><div class="line">    [task resume];</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> *  取消请求</div><div class="line"> */</div><div class="line">- (<span class="keyword">void</span>)stopLoading &#123;</div><div class="line">    [<span class="keyword">self</span>.session invalidateAndCancel];</div><div class="line">    <span class="keyword">self</span>.session = <span class="literal">nil</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="meta">#pragma mark - NSURLSessionDataDelegate</span></div><div class="line"></div><div class="line">-(<span class="keyword">void</span>)URLSession:(<span class="built_in">NSURLSession</span> *)session task:(<span class="built_in">NSURLSessionTask</span> *)task didCompleteWithError:(<span class="built_in">NSError</span> *)error</div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> (error) &#123;</div><div class="line">        [<span class="keyword">self</span>.client URLProtocol:<span class="keyword">self</span> didFailWithError:error];</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        [<span class="keyword">self</span>.client URLProtocolDidFinishLoading:<span class="keyword">self</span>];</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">-(<span class="keyword">void</span>)URLSession:(<span class="built_in">NSURLSession</span> *)session</div><div class="line">         dataTask:(<span class="built_in">NSURLSessionDataTask</span> *)dataTask</div><div class="line">didReceiveResponse:(<span class="built_in">NSURLResponse</span> *)response</div><div class="line">completionHandler:(<span class="keyword">void</span> (^)(<span class="built_in">NSURLSessionResponseDisposition</span>))completionHandler</div><div class="line">&#123;</div><div class="line">    [<span class="keyword">self</span>.client URLProtocol:<span class="keyword">self</span></div><div class="line">          didReceiveResponse:response</div><div class="line">          cacheStoragePolicy:<span class="built_in">NSURLCacheStorageNotAllowed</span>];</div><div class="line">    </div><div class="line">    completionHandler(<span class="built_in">NSURLSessionResponseAllow</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line">-(<span class="keyword">void</span>)URLSession:(<span class="built_in">NSURLSession</span> *)session</div><div class="line">         dataTask:(<span class="built_in">NSURLSessionDataTask</span> *)dataTask</div><div class="line">   didReceiveData:(<span class="built_in">NSData</span> *)data</div><div class="line">&#123;</div><div class="line">    [<span class="keyword">self</span>.client URLProtocol:<span class="keyword">self</span> didLoadData:data];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)URLSession:(<span class="built_in">NSURLSession</span> *)session</div><div class="line">          dataTask:(<span class="built_in">NSURLSessionDataTask</span> *)dataTask</div><div class="line"> willCacheResponse:(<span class="built_in">NSCachedURLResponse</span> *)proposedResponse</div><div class="line"> completionHandler:(<span class="keyword">void</span> (^)(<span class="built_in">NSCachedURLResponse</span> *cachedResponse))completionHandler</div><div class="line">&#123;</div><div class="line">    completionHandler(proposedResponse);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<h3 id="demo2、简单的重定向处理"><a href="#demo2、简单的重定向处理" class="headerlink" title="demo2、简单的重定向处理"></a>demo2、简单的重定向处理</h3><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MySessionURLProtocol</span></span></div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line">+ (<span class="built_in">NSURLRequest</span> *) canonicalRequestForRequest:(<span class="built_in">NSURLRequest</span> *)request &#123;</div><div class="line">    <span class="built_in">NSMutableURLRequest</span> *mutableReqeust = [request mutableCopy];</div><div class="line">    mutableReqeust = [<span class="keyword">self</span> redirectHostInRequset:mutableReqeust];</div><div class="line">    <span class="keyword">return</span> mutableReqeust;</div><div class="line">&#125;</div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line">+(<span class="built_in">NSMutableURLRequest</span>*)redirectHostInRequset:(<span class="built_in">NSMutableURLRequest</span>*)request</div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> ([request.URL host].length == <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">return</span> request;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">//原始url全路径</span></div><div class="line">    <span class="built_in">NSString</span> *originUrlString = [request.URL absoluteString];</div><div class="line">    </div><div class="line">    <span class="comment">//原始url的host</span></div><div class="line">    <span class="built_in">NSString</span> *originHostString = [request.URL host];</div><div class="line">    </div><div class="line">    <span class="comment">//获取host的range</span></div><div class="line">    <span class="built_in">NSRange</span> hostRange = [originUrlString rangeOfString:originHostString];</div><div class="line">    </div><div class="line">    <span class="keyword">if</span> (hostRange.location == <span class="built_in">NSNotFound</span>) &#123;</div><div class="line">        <span class="keyword">return</span> request;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">//重定向到bing搜索主页</span></div><div class="line">    <span class="built_in">NSString</span> *ip = <span class="string">@"cn.bing.com"</span>;</div><div class="line">    </div><div class="line">    <span class="comment">// 替换开始的host</span></div><div class="line">    <span class="built_in">NSString</span> *urlString = [originUrlString stringByReplacingCharactersInRange:hostRange withString:ip];</div><div class="line">    </div><div class="line">    <span class="comment">//得到重定向后的url</span></div><div class="line">    <span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:urlString];</div><div class="line">    </div><div class="line">    <span class="comment">//将新的url赋值给Request</span></div><div class="line">    request.URL = url;</div><div class="line"></div><div class="line">    <span class="comment">//返回修改host重定向的request</span></div><div class="line">    <span class="keyword">return</span> request;</div><div class="line">&#125;</div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<h3 id="demo3自定义NSURLProtol拦截请求后进行处理，然后使用NSURLConnection继续执行网络请求"><a href="#demo3自定义NSURLProtol拦截请求后进行处理，然后使用NSURLConnection继续执行网络请求" class="headerlink" title="demo3自定义NSURLProtol拦截请求后进行处理，然后使用NSURLConnection继续执行网络请求"></a>demo3自定义NSURLProtol拦截请求后进行处理，然后使用NSURLConnection继续执行网络请求</h3><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#import <span class="meta-string">"MyConnectionURLProtocol.h"</span></span></div><div class="line"></div><div class="line"><span class="meta">#define protocolKey @<span class="meta-string">"ConnectionProtocolKey"</span></span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyConnectionURLProtocol</span> () &lt;<span class="title">NSURLConnectionDataDelegate</span>&gt;</span></div><div class="line"></div><div class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSURLConnection</span> * connection;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyConnectionURLProtocol</span></span></div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> *  是否拦截处理指定的请求</div><div class="line"> *</div><div class="line"> *  @param request 指定的请求</div><div class="line"> *</div><div class="line"> *  @return 返回YES表示要拦截处理，返回NO表示不拦截处理</div><div class="line"> */</div><div class="line">+ (<span class="built_in">BOOL</span>)canInitWithRequest:(<span class="built_in">NSURLRequest</span> *)request &#123;</div><div class="line">    </div><div class="line">    <span class="comment">/* </span></div><div class="line">        防止无限循环，因为一个请求在被拦截处理过程中，也会发起一个请求，这样又会走到这里，如果不进行处理，就会造成无限循环</div><div class="line">     */</div><div class="line">    <span class="keyword">if</span> ([<span class="built_in">NSURLProtocol</span> propertyForKey:protocolKey inRequest:request]) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="literal">NO</span>;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="built_in">NSString</span> * url = request.URL.absoluteString;</div><div class="line">    </div><div class="line">    <span class="comment">// 如果url已http或https开头，则进行拦截处理，否则不处理</span></div><div class="line">    <span class="keyword">if</span> ([url hasPrefix:<span class="string">@"http"</span>] || [url hasPrefix:<span class="string">@"https"</span>]) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="literal">YES</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="literal">NO</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> *  如果需要对请求进行重定向，添加指定头部等操作，可以在该方法中进行</div><div class="line"> *</div><div class="line"> *  @param request 原请求</div><div class="line"> *</div><div class="line"> *  @return 修改后的请求</div><div class="line"> */</div><div class="line">+ (<span class="built_in">NSURLRequest</span> *)canonicalRequestForRequest:(<span class="built_in">NSURLRequest</span> *)request &#123;</div><div class="line">    </div><div class="line">    <span class="comment">// 修改了请求的头部信息</span></div><div class="line">    <span class="built_in">NSMutableURLRequest</span> * mutableReq = [request mutableCopy];</div><div class="line">    <span class="built_in">NSMutableDictionary</span> * headers = [mutableReq.allHTTPHeaderFields mutableCopy];</div><div class="line">    [headers setObject:<span class="string">@"AAAA"</span> forKey:<span class="string">@"Key1"</span>];</div><div class="line">    mutableReq.allHTTPHeaderFields = headers;</div><div class="line">    <span class="built_in">NSLog</span>(<span class="string">@"connection reset header"</span>);</div><div class="line">    <span class="keyword">return</span> [mutableReq <span class="keyword">copy</span>];</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> *  开始加载，在该方法中，加载一个请求</div><div class="line"> */</div><div class="line">- (<span class="keyword">void</span>)startLoading &#123;</div><div class="line">    <span class="built_in">NSMutableURLRequest</span> * request = [<span class="keyword">self</span>.request mutableCopy];</div><div class="line">    <span class="comment">// 表示该请求已经被处理，防止无限循环</span></div><div class="line">    [<span class="built_in">NSURLProtocol</span> setProperty:@(<span class="literal">YES</span>) forKey:protocolKey inRequest:request];</div><div class="line">    </div><div class="line">    <span class="keyword">self</span>.connection = [<span class="built_in">NSURLConnection</span> connectionWithRequest:request delegate:<span class="keyword">self</span>];</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> *  取消请求</div><div class="line"> */</div><div class="line">- (<span class="keyword">void</span>)stopLoading &#123;</div><div class="line">    [<span class="keyword">self</span>.connection cancel];</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="meta">#pragma mark - NSURLConnectionDelegate</span></div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)connection:(<span class="built_in">NSURLConnection</span> *)connection didReceiveResponse:(<span class="built_in">NSURLResponse</span> *)response &#123;</div><div class="line">    [<span class="keyword">self</span>.client URLProtocol:<span class="keyword">self</span> didReceiveResponse:response cacheStoragePolicy:<span class="built_in">NSURLCacheStorageNotAllowed</span>];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)connection:(<span class="built_in">NSURLConnection</span> *)connection didReceiveData:(<span class="built_in">NSData</span> *)data &#123;</div><div class="line">    [<span class="keyword">self</span>.client URLProtocol:<span class="keyword">self</span> didLoadData:data];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)connectionDidFinishLoading:(<span class="built_in">NSURLConnection</span> *)connection &#123;</div><div class="line">    [<span class="keyword">self</span>.client URLProtocolDidFinishLoading:<span class="keyword">self</span>];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)connection:(<span class="built_in">NSURLConnection</span> *)connection didFailWithError:(<span class="built_in">NSError</span> *)error &#123;</div><div class="line">    [<span class="keyword">self</span>.client URLProtocol:<span class="keyword">self</span> didFailWithError:error];</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<h2 id="注册NSURLProtocol子类"><a href="#注册NSURLProtocol子类" class="headerlink" title="注册NSURLProtocol子类"></a>注册NSURLProtocol子类</h2><p>当app准备发起网络请求时会遍历所有已注册的NSURLProtocol，询问它们能否处理当前请求，所以你需要尽早注册这个Protocol。在遍历子类的过程是反向遍历的，最后注册的子类会先被遍历，这样自定义的子类将能提前截获请求，当一个子类截获请求后，将终止遍历。</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">- (<span class="built_in">BOOL</span>)application:(<span class="built_in">UIApplication</span> *)application didFinishLaunchingWithOptions:(<span class="built_in">NSDictionary</span> *)launchOptions </div><div class="line">&#123;</div><div class="line">    [<span class="built_in">NSURLProtocol</span> registerClass:[MyURLProtocol <span class="keyword">class</span>]];</div><div class="line">    <span class="keyword">return</span> <span class="literal">YES</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="发送网络请求"><a href="#发送网络请求" class="headerlink" title="发送网络请求"></a>发送网络请求</h2><p>NSURLProtocol 可以拦截 NSURLConnection、NSURLSession、UIwebview 的请求，但是不能拦截WKwebview 和CFNetwork的请求</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">   <span class="built_in">NSError</span> *error =[<span class="built_in">NSError</span> errorWithDomain:<span class="string">@"woshige erro"</span> code:<span class="number">1</span> userInfo:<span class="literal">nil</span>];</div><div class="line">    </div><div class="line">    <span class="built_in">NSURLSession</span> *session = [<span class="built_in">NSURLSession</span> sharedSession];</div><div class="line">    <span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:<span class="string">@"http://appwk.baidu.com/naapi/iap/userbankinfo?uid=bd_0&amp;from=ios_appstore&amp;app_ua=Simulator&amp;ua=bd_1334_750_Simulator_3.4.9_9.2&amp;fr=2&amp;pid=1&amp;bid=2&amp;Bdi_bear=wifi&amp;app_ver=3.4.9&amp;sys_ver=9.2&amp;cuid=50c78ca9f3c39a34c963de578bef1d8c7aecc087&amp;sessid=1471498926&amp;screen=750_1334&amp;opid=wk_na&amp;ydvendor=84942C9A-E479-4856-945A-D55FBCDF4D57"</span>];</div><div class="line">    <span class="comment">// 通过URL初始化task,在block内部可以直接对返回的数据进行处理</span></div><div class="line">    <span class="built_in">NSURLSessionTask</span> *task = [session dataTaskWithURL:url</div><div class="line">                                    completionHandler:^(<span class="built_in">NSData</span> *data, <span class="built_in">NSURLResponse</span> *response, <span class="built_in">NSError</span> *error) &#123;</div><div class="line">                                        <span class="keyword">if</span> (data) &#123;</div><div class="line">                                            <span class="built_in">NSLog</span>(<span class="string">@"%@"</span>, [<span class="built_in">NSJSONSerialization</span> JSONObjectWithData:data options:kNilOptions error:<span class="literal">nil</span>]);</div><div class="line">                                        &#125;</div><div class="line">                                    &#125;];</div><div class="line">    [task resume];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="AFNetworking-3-0-以后版本出现的问题"><a href="#AFNetworking-3-0-以后版本出现的问题" class="headerlink" title="AFNetworking 3.0 以后版本出现的问题"></a>AFNetworking 3.0 以后版本出现的问题</h1><p>NSURLProtocol 确实可以拦截NSURLSession的请求，但是敬哥DEMO中的NSURLSession 是这样创建的<br>      NSURLSession *session = [NSURLSession sharedSession];<br>这样创建的session会使用全局的cooike和其他设置，所以默认是会被hook掉。但是AFN并不是这样创建的session。所以默认是不起作用的。<br>解决办法一是<br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="built_in">NSURLSessionConfiguration</span> *configuration = [<span class="built_in">NSURLSessionConfiguration</span> defaultSessionConfiguration];</div><div class="line"><span class="built_in">NSArray</span> *protocolArray = @[[VKURLProtocol <span class="keyword">class</span>]];</div><div class="line">configuration.protocolClasses = protocolArray;</div><div class="line"></div><div class="line"></div><div class="line">AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];</div></pre></td></tr></table></figure></p>
+<p>像这样在每个请求之前添加<code>protocolClasses</code>或者子类和AFN然后进行设置。</p>
+<p>简单的办法是。修改AFN源文件<code>AFURLSessionManager</code><br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">- (<span class="keyword">instancetype</span>)initWithSessionConfiguration:(<span class="built_in">NSURLSessionConfiguration</span> *)configuration &#123;</div><div class="line">....</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (!configuration) &#123;</div><div class="line">        configuration = [<span class="built_in">NSURLSessionConfiguration</span> defaultSessionConfiguration];</div><div class="line">        <span class="built_in">NSArray</span> *protocolArray = @[<span class="built_in">NSClassFromString</span>(<span class="string">@"VKURLProtocol"</span>)];</div><div class="line">        configuration.protocolClasses = protocolArray;</div><div class="line">    &#125;</div><div class="line"> ....</div></pre></td></tr></table></figure></p>
+<p>在这个if中对<code>NSURLSessionConfiguration</code>进行设置。或者采用method swizzing的方法进行。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/08/24/iOS响应链/" rel="next" title="iOS事件响应链">
+                <i class="fa fa-chevron-left"></i> iOS事件响应链
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/09/14/xcode8更新出现的坑/" rel="prev" title="xcode8更新出现的坑">
+                xcode8更新出现的坑 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8yODQxNC80OTg1"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://www.qq1234.org/uploads/allimg/141208/3_141208212705_2.jpg"
+               alt="王志平" />
+          <p class="site-author-name" itemprop="name">王志平</p>
+           
+              <p class="site-description motion-element" itemprop="description">前方有受苦的预感，所以赞美太阳</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xz410236056" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/wang-zhi-ping-30" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://awhisper.github.io/" title="唯敬" target="_blank">唯敬</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.cnbang.net/" title="Bang" target="_blank">Bang</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.sunnyxx.com/" title="sunny" target="_blank">sunny</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#写在前面的话"><span class="nav-number">1.</span> <span class="nav-text">写在前面的话</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NSURLProtocol"><span class="nav-number">2.</span> <span class="nav-text">NSURLProtocol</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何拦截网络请求"><span class="nav-number">3.</span> <span class="nav-text">如何拦截网络请求?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#编写NSURLProtocol子类"><span class="nav-number">3.1.</span> <span class="nav-text">编写NSURLProtocol子类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重写方法一-请求的过滤，筛选出需要进行处理的请求"><span class="nav-number">3.1.1.</span> <span class="nav-text">重写方法一 请求的过滤，筛选出需要进行处理的请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重写方法二、请求重定向、修改请求头"><span class="nav-number">3.1.2.</span> <span class="nav-text">重写方法二、请求重定向、修改请求头</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重写方法三、让被拦截的请求执行"><span class="nav-number">3.1.3.</span> <span class="nav-text">重写方法三、让被拦截的请求执行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重写方法四、取消执行请求"><span class="nav-number">3.1.4.</span> <span class="nav-text">重写方法四、取消执行请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重写方法五、可用来使用缓存数据结束此次网络请求"><span class="nav-number">3.1.5.</span> <span class="nav-text">重写方法五、可用来使用缓存数据结束此次网络请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#demo1-自定义NSURLProtol拦截请求后进行处理，然后使用NSURLSession继续执行网络请求"><span class="nav-number">3.1.6.</span> <span class="nav-text">demo1 自定义NSURLProtol拦截请求后进行处理，然后使用NSURLSession继续执行网络请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#demo2、简单的重定向处理"><span class="nav-number">3.1.7.</span> <span class="nav-text">demo2、简单的重定向处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#demo3自定义NSURLProtol拦截请求后进行处理，然后使用NSURLConnection继续执行网络请求"><span class="nav-number">3.1.8.</span> <span class="nav-text">demo3自定义NSURLProtol拦截请求后进行处理，然后使用NSURLConnection继续执行网络请求</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注册NSURLProtocol子类"><span class="nav-number">3.2.</span> <span class="nav-text">注册NSURLProtocol子类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发送网络请求"><span class="nav-number">3.3.</span> <span class="nav-text">发送网络请求</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AFNetworking-3-0-以后版本出现的问题"><span class="nav-number">4.</span> <span class="nav-text">AFNetworking 3.0 以后版本出现的问题</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王志平</span>
+</div>
+
+<div class=“beian”>
+  <a href="http://www.miitbeian.gov.cn/">京ICP备17009656号</a> 
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      $('#local-search-input').focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+      $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = $( "entry", xmlResponse ).map(function() {
+            return {
+              title: $( "title", this ).text(),
+              content: $("content",this).text(),
+              url: $( "url" , this).text()
+            };
+          }).get();
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+          proceedsearch();
+        }
+      });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("1GEtlEkExSuC5bRa43NqeOye-gzGzoHsz", "YVC1bor6Jjw9hJcoY0GCwtvY");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

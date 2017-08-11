@@ -1,0 +1,1005 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="基础知识," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="幻想乡" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="系统如何获取到了用户进行了“单击”这一行为？操作系统把包含这些点击事件的信息包装成UITouch和UIEvent形式的实例，然后找到当前运行的程序，逐级寻找能够响应这个事件的对象，直到没有响应者响应。这一寻找的过程，被称作事件的响应链，如下图所示，不用的响应者以链式的方式寻找">
+<meta property="og:type" content="article">
+<meta property="og:title" content="事件响应链">
+<meta property="og:url" content="https://xz410236056.github.io/2016/07/04/iOS响应链/index.html">
+<meta property="og:site_name" content="幻想乡">
+<meta property="og:description" content="系统如何获取到了用户进行了“单击”这一行为？操作系统把包含这些点击事件的信息包装成UITouch和UIEvent形式的实例，然后找到当前运行的程序，逐级寻找能够响应这个事件的对象，直到没有响应者响应。这一寻找的过程，被称作事件的响应链，如下图所示，不用的响应者以链式的方式寻找">
+<meta property="og:image" content="http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE.jpg">
+<meta property="og:image" content="http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_2.jpeg">
+<meta property="og:image" content="http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_3.jpeg">
+<meta property="og:image" content="http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_4.jpeg">
+<meta property="og:image" content="http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_5.jpeg">
+<meta property="og:image" content="http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_6.gif">
+<meta property="og:updated_time" content="2016-08-24T01:49:03.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="事件响应链">
+<meta name="twitter:description" content="系统如何获取到了用户进行了“单击”这一行为？操作系统把包含这些点击事件的信息包装成UITouch和UIEvent形式的实例，然后找到当前运行的程序，逐级寻找能够响应这个事件的对象，直到没有响应者响应。这一寻找的过程，被称作事件的响应链，如下图所示，不用的响应者以链式的方式寻找">
+<meta name="twitter:image" content="http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 6303452549810750000,
+      author: '神'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="https://xz410236056.github.io/2016/07/04/iOS响应链/"/>
+
+  <title> 事件响应链 | 幻想乡 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?5fba1dd1e3777f9d1cec4cd0202fb130";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">幻想乡</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-message">
+          <a href="/message" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            留言
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="#" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup">
+ <span class="search-icon fa fa-search"></span>
+ <input type="text" id="local-search-input">
+ <div id="local-search-result"></div>
+ <span class="popup-btn-close">close</span>
+</div>
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                事件响应链
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-07-04T17:09:21+08:00" content="2016-07-04">
+              2016-07-04
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/07/04/iOS响应链/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/07/04/iOS响应链/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/07/04/iOS响应链/" class="leancloud_visitors" data-flag-title="事件响应链">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="系统如何获取到了用户进行了“单击”这一行为？"><a href="#系统如何获取到了用户进行了“单击”这一行为？" class="headerlink" title="系统如何获取到了用户进行了“单击”这一行为？"></a>系统如何获取到了用户进行了“单击”这一行为？</h1><p>操作系统把包含这些点击事件的信息包装成UITouch和UIEvent形式的实例，然后找到当前运行的程序，逐级寻找能够响应这个事件的对象，直到没有响应者响应。这一寻找的过程，被称作事件的响应链，如下图所示，不用的响应者以链式的方式寻找</p>
+<p><img src="http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE.jpg" width="40%"><br><a id="more"></a> </p>
+<h1 id="响应者"><a href="#响应者" class="headerlink" title="响应者"></a>响应者</h1><p>在iOS中，能够响应事件的对象都是UIResponder的子类对象。UIResponder提供了四个用户点击的回调方法，分别对应用户点击开始、移动、点击结束以及取消点击，其中只有在程序强制退出或者来电时，取消点击事件才会调用。<br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Generally, all responders which do custom touch handling should override all four of these methods.</span></div><div class="line"><span class="comment">// Your responder will receive either touchesEnded:withEvent: or touchesCancelled:withEvent: for each</span></div><div class="line"><span class="comment">// touch it is handling (those touches it received in touchesBegan:withEvent:).</span></div><div class="line"><span class="comment">// *** You must handle cancelled touches to ensure correct behavior in your application.  Failure to</span></div><div class="line"><span class="comment">// do so is very likely to lead to incorrect behavior or crashes.</span></div><div class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="keyword">nullable</span> <span class="built_in">UIEvent</span> *)event;</div><div class="line">- (<span class="keyword">void</span>)touchesMoved:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="keyword">nullable</span> <span class="built_in">UIEvent</span> *)event;</div><div class="line">- (<span class="keyword">void</span>)touchesEnded:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="keyword">nullable</span> <span class="built_in">UIEvent</span> *)event;</div><div class="line">- (<span class="keyword">void</span>)touchesCancelled:(<span class="keyword">nullable</span> <span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="keyword">nullable</span> <span class="built_in">UIEvent</span> *)event;</div><div class="line">- (<span class="keyword">void</span>)touchesEstimatedPropertiesUpdated:(<span class="built_in">NSSet</span> * _Nonnull)touches <span class="built_in">NS_AVAILABLE_IOS</span>(<span class="number">9</span>_1);<span class="comment">//9.1之后加入的3D触摸事件。</span></div></pre></td></tr></table></figure></p>
+<p>在自定义UIView为基类的控件时，我们可以重写这几个方法来进行点击回调。在回调中，我们可以看到方法接收两个参数，一个UITouch对象的集合，还有一个UIEvent对象。这两个参数分别代表的是点击对象和事件对象。</p>
+<ul>
+<li>事件对象<br>iOS使用UIEvent表示用户交互的事件对象，在UIEvent.h文件中，我们可以看到有一个UIEventType类型的属性，这个属性表示了当前的响应事件类型。分别有多点触控、摇一摇以及远程操作（在iOS9之后新增了3DTouch事件类型）。在一个用户点击事件处理过程中，UIEvent对象是唯一的</li>
+<li>点击对象<br>UITouch表示单个点击，其类文件中存在枚举类型UITouchPhase的属性，用来表示当前点击的状态。这些状态包括点击开始、移动、停止不动、结束和取消五个状态。每次点击发生的时候，点击对象都放在一个集合中传入UIResponder的回调方法中，我们通过集合中对象获取用户点击的位置。其中通过<code>- (CGPoint)locationInView:(nullable UIView *)view</code>获取当前点击坐标点，<code>- (CGPoint)previousLocationInView:(nullable UIView *)view</code>获取上个点击位置的坐标点。<br>为了确认UIView确实是通过UIResponder的点击方法响应点击事件的，我创建了UIView的类别，并重写+ (void)load方法，使用method_swizzling的方式交换点击事件的实现<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">+ (<span class="keyword">void</span>)load</div><div class="line">    Method origin = class_getInstanceMethod([<span class="built_in">UIView</span> <span class="keyword">class</span>], <span class="keyword">@selector</span>(touchesBegan:withEvent:));</div><div class="line">    Method custom = class_getInstanceMethod([<span class="built_in">UIView</span> <span class="keyword">class</span>], <span class="keyword">@selector</span>(lxd_touchesBegan:withEvent:));</div><div class="line">    method_exchangeImplementations(origin, custom);</div><div class="line"></div><div class="line">    origin = class_getInstanceMethod([<span class="built_in">UIView</span> <span class="keyword">class</span>], <span class="keyword">@selector</span>(touchesMoved:withEvent:));</div><div class="line">    custom = class_getInstanceMethod([<span class="built_in">UIView</span> <span class="keyword">class</span>], <span class="keyword">@selector</span>(lxd_touchesMoved:withEvent:));</div><div class="line">    method_exchangeImplementations(origin, custom);</div><div class="line"></div><div class="line">    origin = class_getInstanceMethod([<span class="built_in">UIView</span> <span class="keyword">class</span>], <span class="keyword">@selector</span>(touchesEnded:withEvent:));</div><div class="line">    custom = class_getInstanceMethod([<span class="built_in">UIView</span> <span class="keyword">class</span>], <span class="keyword">@selector</span>(lxd_touchesEnded:withEvent:));</div><div class="line">    method_exchangeImplementations(origin, custom);</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)lxd_touchesBegan: (<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent: (<span class="built_in">UIEvent</span> *)event</div><div class="line">&#123;</div><div class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ --- begin"</span>, <span class="keyword">self</span>.class);</div><div class="line">    [<span class="keyword">self</span> lxd_touchesBegan: touches withEvent: event];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)lxd_touchesMoved: (<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent: (<span class="built_in">UIEvent</span> *)event</div><div class="line">&#123;</div><div class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ --- move"</span>, <span class="keyword">self</span>.class);</div><div class="line">    [<span class="keyword">self</span> lxd_touchesMoved: touches withEvent: event];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (<span class="keyword">void</span>)lxd_touchesEnded: (<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent: (<span class="built_in">UIEvent</span> *)event</div><div class="line">&#123;</div><div class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%@ --- end"</span>, <span class="keyword">self</span>.class);</div><div class="line">    [<span class="keyword">self</span> lxd_touchesEnded: touches withEvent: event];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>在新建的项目中，我分别创建了AView、BView、CView和DView四个UIView的子类，然后点击任意一个位置：</p>
+<p><img src="http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_2.jpeg" width="40%"></p>
+<p>在我点击上图绿色视图的时候，控制台输出了下面的日志<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">CView --- begin</div><div class="line">CView --- end</div></pre></td></tr></table></figure></p>
+<p>由此可见在我们点击UIView的时候，是通过touches相关的点击事件进行回调处理的。</p>
+<p>除了touches回调的几个点击事件，手势UIGestureRecognizer对象也可以附加在view上，来实现其他丰富的手势事件。在view添加单击手势之后，原来的touchesEnded方法就无效了。最开始我一直认为view添加手势之后，原有的touches系列方法全部无效。但是在测试demo中，发现view添加手势之后，touchesBegan方法是有进行回调的，但是moved跟ended就没有进行回调。因此，在系统的touches事件处理中，在touchesBegan之后，应该是存在着一个调度后续事件（nextHandler）处理的方法，个人猜测事件调度的处理大致如下图示：</p>
+<p><img src="http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_3.jpeg" width="40%"></p>
+<h1 id="响应链传递"><a href="#响应链传递" class="headerlink" title="响应链传递"></a>响应链传递</h1><p>上面已经介绍了某个控件在接收到点击事件时的处理，那么系统是怎么通过用户点击的位置找到处理点击事件的view的呢？<br>在上文我们已经说过了系统通过不断查找下一个响应者来响应点击事件，而所有的可交互控件都是UIResponder直接或者间接的子类，那么我们是否可以在这个类的头文件中找到关键的属性呢？</p>
+<p>正好存在着这么一个方法：<code>- (nullable UIResponder *)nextResponder</code>，通过方法名我们不难发现这是获取当前view的下一个响应者，那么我们重写touchesBegan方法，逐级获取下一响应者，直到没有下一个响应者位置。相关代码如下：<br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">- (<span class="keyword">void</span>)touchesBegan:(<span class="built_in">NSSet</span>&lt;<span class="built_in">UITouch</span> *&gt; *)touches withEvent:(<span class="built_in">UIEvent</span> *)event</div><div class="line">&#123;</div><div class="line">    <span class="built_in">UIResponder</span> * next = [<span class="keyword">self</span> nextResponder];</div><div class="line">    <span class="built_in">NSMutableString</span> * prefix = <span class="string">@""</span>.mutableCopy;</div><div class="line"></div><div class="line">    <span class="keyword">while</span> (next != <span class="literal">nil</span>) &#123;</div><div class="line">        <span class="built_in">NSLog</span>(<span class="string">@"%@%@"</span>, prefix, [next <span class="keyword">class</span>]);</div><div class="line">        [prefix appendString: <span class="string">@"--"</span>];</div><div class="line">        next = [next nextResponder];</div><div class="line">    &#125;    </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>控制台输出的所有下级事件响应者如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">AView</div><div class="line">--UIView</div><div class="line">----ViewController</div><div class="line">------UIWindow</div><div class="line">--------UIApplication</div><div class="line">----------AppDelegate</div></pre></td></tr></table></figure></p>
+<p>虽然结果非常有层次，但是从系统逐级查找响应者的角度上来说，这个输出的顺序是刚好相反的。为什么会出现这种问题呢？我们可以看到输出中存在一个ViewController类，说明UIViewController也是UIResponder的子类。但是我们可以发现，controller是一个view的管理者，即便它是响应链的成员之一，但是按照逻辑来说，控制器不应该是系统查找对象之一，通过nextResponder方法查找的这个思路是不正确的。<br>后来，发现在UIView的头文件中存在这么两个方法，分别返回UIView和BOOL类型的方法：<br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">- (<span class="keyword">nullable</span> <span class="built_in">UIView</span> *)hitTest:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="keyword">nullable</span> <span class="built_in">UIEvent</span> *)event;   <span class="comment">// recursively calls -pointInside:withEvent:. point is in the receiver's coordinate system</span></div><div class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="keyword">nullable</span> <span class="built_in">UIEvent</span> *)event;   <span class="comment">// default returns YES if point is in bounds</span></div></pre></td></tr></table></figure></p>
+<p>根据方法名，一个是根据点击坐标返回事件是否发生在本视图以内，另一个方法是返回响应点击事件的对象。通过这两个方法，我们可以猜到，系统在收到点击事件的时候通过不断遍历当前视图上的子视图的这些方法，获取下一个响应的视图。因此，继续通过method_swizzling方式修改这两个方法的实现，并且测试输出如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">UIStatusBarWindow can answer 1</div><div class="line">UIStatusBar can answer 0</div><div class="line">UIStatusBarForegroundView can answer 0</div><div class="line">UIStatusBarServiceItemView can answer 0</div><div class="line">UIStatusBarDataNetworkItemView can answer 0</div><div class="line">UIStatusBarBatteryItemView can answer 0</div><div class="line">UIStatusBarTimeItemView can answer 0</div><div class="line">hit view: UIStatusBar</div><div class="line">hit view: UIStatusBarWindow</div><div class="line">UIWindow can answer 1</div><div class="line">UIView can answer 1</div><div class="line">hit view: _UILayoutGuide</div><div class="line">hit view: _UILayoutGuide</div><div class="line">AView can answer 1</div><div class="line">DView can answer 0</div><div class="line">hit view: DView</div><div class="line">BView can answer 0</div><div class="line">hit view: BView</div><div class="line">hit view: AView</div><div class="line">hit view: UIView</div><div class="line">hit view: UIWindow</div><div class="line">......  //下面是touches方法的输出</div></pre></td></tr></table></figure>
+<p>最上面的UIStatusBar开头的类型大家可能没见过，但是不妨碍我们猜到这是状态栏相关的一些视图，具体可以查找苹果的文档中心（Xcode中快捷键shift+command+0打开）。从输出中不难看出系统先调用<code>pointInSide: WithEvent:</code>判断当前视图以及这些视图的子视图是否能接收这次点击事件，然后在调用<code>hitTest: withEvent:</code>依次获取处理这个事件的所有视图对象，在获取所有的可处理事件对象后，开始调用这些对象的touches回调方法</p>
+<p>通过输出的方法调用，我们可以看到响应查找的顺序是： UIStatusBar相关的视图 -&gt; UIWindow -&gt; UIView -&gt; AView -&gt; DView -&gt; BView（系统在事件链传递的过程中一定会遍历所有的子视图判断是否能够响应点击事件），以本文demo为例，我们可以得出事件响应链查找的图示如下：</p>
+<p><img src="http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_4.jpeg" width="40%"></p>
+<p>那么在上面的查找响应者流程完成之后，系统会将本次事件中的点击转换成UITouch对象，然后将这些对象和UIEvent类型的事件对象传递给touchesBegan方法<br>不仅如此，从上面输出的nextResponder来看，所有的响应者都是在查找中返回可响应点击的视图。因此，我们可以推测出UIApplication对象维护着自己的一个响应者栈，当<code>pointInSide: withEvent:</code>返回yes的时候，响应者入栈。</p>
+<p><img src="http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_5.jpeg" width="40%"></p>
+<p>栈顶的响应者作为最优先处理事件的对象，假设AView不处理事件，那么出栈，移交给UIView，以此下去，直到事件得到了处理或者到达AppDelegate后依旧未响应，事件被摒弃为止。通过这个机制我们也可以看到controller是响应者栈中的例外，即便没有<code>pointInSide: withEvent:</code>的方法返回可响应，controller依旧能够入栈成为UIView的下一个响应者。</p>
+<h1 id="响应链应用"><a href="#响应链应用" class="headerlink" title="响应链应用"></a>响应链应用</h1><p>既然已经知道了系统是怎么获取响应视图的流程了，那么我们可以通过重写查找事件处理者的方法来实现不规则形状点击。最常见的不规则视图就是圆形视图，在demo中我设置view的宽高为200，那么重写方法事件如下:<br><figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">- (<span class="built_in">BOOL</span>)pointInside:(<span class="built_in">CGPoint</span>)point withEvent:(<span class="built_in">UIEvent</span> *)event</div><div class="line">&#123;</div><div class="line">    <span class="keyword">const</span> <span class="built_in">CGFloat</span> halfWidth = <span class="number">100</span>;</div><div class="line">    <span class="built_in">CGFloat</span> xOffset = point.x - <span class="number">100</span>;</div><div class="line">    <span class="built_in">CGFloat</span> yOffset = point.y - <span class="number">100</span>;</div><div class="line">    <span class="built_in">CGFloat</span> radius = sqrt(xOffset * xOffset + yOffset * yOffset);</div><div class="line">    <span class="keyword">return</span> radius &lt;= halfWidth;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><img src="http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E5%93%8D%E5%BA%94%E9%93%BE_6.gif" width="40%"></p>
+<p>根据view找到对应的controller:</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="built_in">UIViewController</span>* <span class="built_in">UIViewParentController</span>(<span class="built_in">UIView</span> *view)</div><div class="line"></div><div class="line">&#123;</div><div class="line"></div><div class="line">    <span class="built_in">UIResponder</span> *responder=view;</div><div class="line"></div><div class="line">    <span class="keyword">while</span> ([responder isKindOfClass:[<span class="built_in">UIView</span> <span class="keyword">class</span>]])</div><div class="line"></div><div class="line">    &#123;</div><div class="line"></div><div class="line">        responder=[responder nextResponder];</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">   <span class="keyword">return</span> (<span class="built_in">UIViewController</span> *)responder;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础知识/" rel="tag">#基础知识</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/04/第一个博客/" rel="prev" title="第一篇博客">
+                第一篇博客 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/07/04/iOS响应链/"
+           data-title="事件响应链" data-url="https://xz410236056.github.io/2016/07/04/iOS响应链/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://www.qq1234.org/uploads/allimg/141208/3_141208212705_2.jpg"
+               alt="王志平" />
+          <p class="site-author-name" itemprop="name">王志平</p>
+          <p class="site-description motion-element" itemprop="description">前方有受苦的预感，所以赞美太阳</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/xz410236056" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.zhihu.com/people/wang-zhi-ping-30" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://awhisper.github.io/" title="唯敬" target="_blank">唯敬</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.cnbang.net/" title="Bang" target="_blank">Bang</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#系统如何获取到了用户进行了“单击”这一行为？"><span class="nav-number">1.</span> <span class="nav-text">系统如何获取到了用户进行了“单击”这一行为？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#响应者"><span class="nav-number">2.</span> <span class="nav-text">响应者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#响应链传递"><span class="nav-number">3.</span> <span class="nav-text">响应链传递</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#响应链应用"><span class="nav-number">4.</span> <span class="nav-text">响应链应用</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王志平</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"FantasyTownship"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+      
+      <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+      <script src="/js/src/hook-duoshuo.js"></script>
+    
+  
+
+
+
+
+
+
+  
+  
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length == 0) {
+       search_path = "search.xml";
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    function proceedsearch() {
+      $("body").append('<div class="popoverlay">').css('overflow', 'hidden');
+      $('.popup').toggle();
+
+    }
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+    'use strict';
+    $.ajax({
+        url: path,
+        dataType: "xml",
+        async: true,
+        success: function( xmlResponse ) {
+            // get the contents from search data
+            isfetched = true;
+            $('.popup').detach().appendTo('.header-inner');
+            var datas = $( "entry", xmlResponse ).map(function() {
+                return {
+                    title: $( "title", this ).text(),
+                    content: $("content",this).text(),
+                    url: $( "url" , this).text()
+                };
+            }).get();
+            var $input = document.getElementById(search_id);
+            var $resultContent = document.getElementById(content_id);
+            $input.addEventListener('input', function(){
+                var matchcounts = 0;
+                var str='<ul class=\"search-result-list\">';                
+                var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                $resultContent.innerHTML = "";
+                if (this.value.trim().length > 1) {
+                // perform local searching
+                datas.forEach(function(data) {
+                    var isMatch = true;
+                    var content_index = [];
+                    var data_title = data.title.trim().toLowerCase();
+                    var data_content = data.content.trim().replace(/<[^>]+>/g,"").toLowerCase();
+                    var data_url = data.url;
+                    var index_title = -1;
+                    var index_content = -1;
+                    var first_occur = -1;
+                    // only match artiles with not empty titles and contents
+                    if(data_title != '' && data_content != '') {
+                        keywords.forEach(function(keyword, i) {
+                            index_title = data_title.indexOf(keyword);
+                            index_content = data_content.indexOf(keyword);
+                            if( index_title < 0 && index_content < 0 ){
+                                isMatch = false;
+                            } else {
+                                if (index_content < 0) {
+                                    index_content = 0;
+                                }
+                                if (i == 0) {
+                                    first_occur = index_content;
+                                }
+                            }
+                        });
+                    }
+                    // show search results
+                    if (isMatch) {
+                        matchcounts += 1;
+                        str += "<li><a href='"+ data_url +"' class='search-result-title'>"+ data_title +"</a>";
+                        var content = data.content.trim().replace(/<[^>]+>/g,"");
+                        if (first_occur >= 0) {
+                            // cut out 100 characters
+                            var start = first_occur - 20;
+                            var end = first_occur + 80;
+                            if(start < 0){
+                                start = 0;
+                            }
+                            if(start == 0){
+                                end = 50;
+                            }
+                            if(end > content.length){
+                                end = content.length;
+                            }
+                            var match_content = content.substring(start, end);
+                            // highlight all keywords
+                            keywords.forEach(function(keyword){
+                                var regS = new RegExp(keyword, "gi");
+                                match_content = match_content.replace(regS, "<b class=\"search-keyword\">"+keyword+"</b>");
+                            });
+                            
+                            str += "<p class=\"search-result\">" + match_content +"...</p>"
+                        }
+                        str += "</li>";
+                    }
+                })};
+                str += "</ul>";
+                if (matchcounts == 0) { str = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>' }
+                if (keywords == "") { str = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>' }
+                $resultContent.innerHTML = str;
+            });
+            proceedsearch();
+        }
+    });}
+
+    // handle and trigger popup window;
+    $('.popup-trigger').mousedown(function(e) {
+      e.stopPropagation();
+      if (isfetched == false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+
+    });
+
+    $('.popup-btn-close').click(function(e){
+      $('.popup').hide();
+      $(".popoverlay").remove();
+      $('body').css('overflow', '');
+    });
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+  </script>
+
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("1GEtlEkExSuC5bRa43NqeOye-gzGzoHsz", "YVC1bor6Jjw9hJcoY0GCwtvY");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+</body>
+</html>
