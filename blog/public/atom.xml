@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="jokewang.top/"/>
-  <updated>2017-08-11T06:58:45.000Z</updated>
+  <updated>2017-08-18T06:22:24.000Z</updated>
   <id>jokewang.top/</id>
   
   <author>
@@ -16,11 +16,53 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>scrollview在iOS8的bug</title>
+    <link href="jokewang.top/2017/08/18/scrollview%E5%9C%A8iOS8%E7%9A%84bug/"/>
+    <id>jokewang.top/2017/08/18/scrollview在iOS8的bug/</id>
+    <published>2017-08-18T05:55:17.000Z</published>
+    <updated>2017-08-18T06:22:24.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot; class=&quot;headerlink&quot; title=&quot;问题&quot;&gt;&lt;/a&gt;问题&lt;/h1&gt;&lt;p&gt;iOS9之前版本的scrollview在开启弹簧效果的时候，滑动到最底部或者顶部触发弹簧动画，此时退出控制器，会触发crash。&lt;/p&gt;
+&lt;h1 id=&quot;原因&quot;&gt;&lt;a href=&quot;#原因&quot; class=&quot;headerlink&quot; title=&quot;原因&quot;&gt;&lt;/a&gt;原因&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;The UIScrollView on stack frame #1 probably wants to inform its delegate about the animation ending, but the delegate is gone at that point. Setting NSZombieEnabled would probably confirm this.&lt;br&gt;Delegates are not retained, so this is a common error in Cocoa and Cocoa Touch. Look for delegates on UIScrollView or UITableView in your code and try to find out which one might be released before its time.&lt;/p&gt;
+&lt;p&gt;在iOS8.x的系统上delegate并不是weak属性, 而是__unsafe_unretained.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;解决方案&quot;&gt;&lt;a href=&quot;#解决方案&quot; class=&quot;headerlink&quot; title=&quot;解决方案&quot;&gt;&lt;/a&gt;解决方案&lt;/h1&gt;&lt;p&gt;既然是因为scrollview被释放而代理还在，引发的bug。那么hook dealloc释放delegate即可。&lt;br&gt;首先为所有的object添加一个释放时触发的block&lt;/p&gt;
+&lt;a id=&quot;more&quot;&gt;&lt;/a&gt;
+&lt;figure class=&quot;highlight objectivec&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;21&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;22&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;23&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;24&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;25&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;26&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;27&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;28&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;29&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;30&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;31&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;32&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;33&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;34&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;35&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;.h&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/**&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; @brief 添加一个block,当该对象释放时被调用&lt;/div&gt;&lt;div class=&quot;line&quot;&gt; **/&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)guard_addDeallocBlock:(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;(^)(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;))block;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;.m&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@interface&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Parasite&lt;/span&gt; : &lt;span class=&quot;title&quot;&gt;NSObject&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@property&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;nonatomic&lt;/span&gt;, &lt;span class=&quot;keyword&quot;&gt;copy&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;(^deallocBlock)(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@end&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@implementation&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Parasite&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)dealloc&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    !_deallocBlock ?: _deallocBlock();&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@end&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@implementation&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;NSObject&lt;/span&gt; (&lt;span class=&quot;title&quot;&gt;Guard&lt;/span&gt;)&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;)guard_addDeallocBlock:(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;(^)(&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt;))block &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;@synchronized&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;NSString&lt;/span&gt; *kAssociatedKey = &lt;span class=&quot;literal&quot;&gt;nil&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;built_in&quot;&gt;NSMutableArray&lt;/span&gt; *parasiteList = objc_getAssociatedObject(&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;, &amp;amp;kAssociatedKey);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (!parasiteList)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            parasiteList = [&lt;span class=&quot;built_in&quot;&gt;NSMutableArray&lt;/span&gt; new];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            objc_setAssociatedObject(&lt;span class=&quot;keyword&quot;&gt;self&lt;/span&gt;, &amp;amp;kAssociatedKey, parasiteList, OBJC_ASSOCIATION_RETAIN_NONATOMIC);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        Parasite *parasite = [Parasite new];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        parasite.deallocBlock = block;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        [parasiteList addObject: parasite];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;@end&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;然后将在scrollview分类中hook delegate在dealloc时释放&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;21&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;22&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;23&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;24&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;25&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;26&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;27&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;28&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;29&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;30&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;31&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;32&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;33&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;34&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;35&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;36&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;37&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;38&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;39&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;40&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;41&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;42&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;43&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;44&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;45&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;@implementation UIScrollView (safeDelegate)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;+ (void)load&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    static dispatch_once_t onceToken;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    dispatch_once(&amp;amp;onceToken, ^&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        Class class = [self class];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        SEL oldSEL = @selector(setDelegate:);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        SEL newSEL = @selector(myselfSetDelegate:);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        Method oldMethod = class_getInstanceMethod(class, oldSEL);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        Method newMethod = class_getInstanceMethod(class, newSEL);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        BOOL success = class_addMethod(class, oldSEL, method_getImplementation(newMethod), method_getTypeEncoding(newMethod));&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        if (success)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            class_replaceMethod(class, newSEL, method_getImplementation(oldMethod), method_getTypeEncoding(oldMethod));&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        else&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            method_exchangeImplementations(oldMethod, newMethod);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;- (void)myselfSetDelegate:(id )delegate&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    if (delegate) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        __weak typeof(UIScrollView *)weak_self = self;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        [delegate guard_addDeallocBlock:^&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            weak_self.delegate = nil;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            if ([weak_self isKindOfClass:[UITableView class]])&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                ((UITableView *)weak_self).editing = NO;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                ((UITableView *)weak_self).dataSource = nil;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                ((UITableView *)weak_self).delegate = nil;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            else if ([weak_self isKindOfClass:[UICollectionView class]])&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                ((UICollectionView *)weak_self).dataSource = nil;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                ((UICollectionView *)weak_self).delegate = nil;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &amp;#125;];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    [self myselfSetDelegate:delegate];&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;参考文档：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://stackoverflow.com/questions/3686803/uiscrollview-exc-bad-access-crash-in-ios-sdk&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;UIScrollView EXC_BAD_ACCESS crash in iOS SDK&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://www.tanhao.me/pieces/160626.html/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;为对象添加一个释放时触发的block&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;问题&quot;&gt;&lt;a href=&quot;#问题&quot; class=&quot;headerlink&quot; title=&quot;问题&quot;&gt;&lt;/a&gt;问题&lt;/h1&gt;&lt;p&gt;iOS9之前版本的scrollview在开启弹簧效果的时候，滑动到最底部或者顶部触发弹簧动画，此时退出控制器，会触发crash。&lt;/p&gt;
+&lt;h1 id=&quot;原因&quot;&gt;&lt;a href=&quot;#原因&quot; class=&quot;headerlink&quot; title=&quot;原因&quot;&gt;&lt;/a&gt;原因&lt;/h1&gt;&lt;blockquote&gt;
+&lt;p&gt;The UIScrollView on stack frame #1 probably wants to inform its delegate about the animation ending, but the delegate is gone at that point. Setting NSZombieEnabled would probably confirm this.&lt;br&gt;Delegates are not retained, so this is a common error in Cocoa and Cocoa Touch. Look for delegates on UIScrollView or UITableView in your code and try to find out which one might be released before its time.&lt;/p&gt;
+&lt;p&gt;在iOS8.x的系统上delegate并不是weak属性, 而是__unsafe_unretained.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&quot;解决方案&quot;&gt;&lt;a href=&quot;#解决方案&quot; class=&quot;headerlink&quot; title=&quot;解决方案&quot;&gt;&lt;/a&gt;解决方案&lt;/h1&gt;&lt;p&gt;既然是因为scrollview被释放而代理还在，引发的bug。那么hook dealloc释放delegate即可。&lt;br&gt;首先为所有的object添加一个释放时触发的block&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="iOS" scheme="jokewang.top/categories/iOS/"/>
+    
+    
+      <category term="基础知识" scheme="jokewang.top/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
     <title>iOS异常处理及signal信号</title>
     <link href="jokewang.top/2017/08/10/iOS%20%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%8F%8Asingal%E4%BF%A1%E5%8F%B7/"/>
     <id>jokewang.top/2017/08/10/iOS 异常处理及singal信号/</id>
     <published>2017-08-10T14:53:19.000Z</published>
-    <updated>2017-08-11T06:58:45.000Z</updated>
+    <updated>2017-08-11T07:03:05.000Z</updated>
     
     <content type="html">&lt;h1 id=&quot;系统crash&quot;&gt;&lt;a href=&quot;#系统crash&quot; class=&quot;headerlink&quot; title=&quot;系统crash&quot;&gt;&lt;/a&gt;系统crash&lt;/h1&gt;&lt;p&gt;不讲2333 什么时候想起来再填充&lt;/p&gt;
 &lt;h1 id=&quot;singal信号&quot;&gt;&lt;a href=&quot;#singal信号&quot; class=&quot;headerlink&quot; title=&quot;singal信号&quot;&gt;&lt;/a&gt;singal信号&lt;/h1&gt;&lt;blockquote&gt;
@@ -399,7 +441,7 @@
     <link href="jokewang.top/2016/11/15/%E7%A7%BB%E5%8A%A8%E7%AB%AF%E7%9B%B4%E6%92%AD%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/"/>
     <id>jokewang.top/2016/11/15/移动端直播技术选型/</id>
     <published>2016-11-15T09:17:31.000Z</published>
-    <updated>2016-11-17T05:49:16.000Z</updated>
+    <updated>2017-08-11T07:03:59.000Z</updated>
     
     <content type="html">&lt;h1 id=&quot;自己做还是用SDK&quot;&gt;&lt;a href=&quot;#自己做还是用SDK&quot; class=&quot;headerlink&quot; title=&quot;自己做还是用SDK&quot;&gt;&lt;/a&gt;自己做还是用SDK&lt;/h1&gt;&lt;p&gt;先上个流程图&lt;br&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E7%9B%B4%E6%92%AD%E6%B5%81%E7%A8%8B.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
 &lt;h2 id=&quot;自己做&quot;&gt;&lt;a href=&quot;#自己做&quot; class=&quot;headerlink&quot; title=&quot;自己做&quot;&gt;&lt;/a&gt;自己做&lt;/h2&gt;&lt;ul&gt;
@@ -464,7 +506,8 @@
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;大部分 SDK提供商已经将主要功能做完整，百度云在自定义方面设计的比较多。网易云简单易接入。&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;img src=&quot;http://7xvz3k.com1.z0.glb.clouddn.com/blog_%E7%9B%B4%E6%92%AD_%E4%B9%90%E8%A7%86%E5%9F%BA%E7%A1%80%E4%BB%B7%E6%A0%BC.png&quot; alt=&quot;图 1 乐视视频云基础定价&quot;&gt;&lt;/p&gt;
-&lt;center&gt;&lt;font color=&quot;Silver&quot;&gt; 图 1 乐视视频云基础定价&lt;/font&gt;&lt;/center&gt;</content>
+&lt;center&gt;&lt;font color=&quot;Silver&quot;&gt; 图 1 乐视视频云基础定价&lt;/font&gt;&lt;/center&gt;
+</content>
     
     <summary type="html">
     
@@ -865,30 +908,6 @@
     
       &lt;p&gt;只能说网易的棋下的不错，中国最良心的互联网企业。&lt;/p&gt;
 &lt;iframe frameborder=&quot;no&quot; border=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; width=&quot;330&quot; height=&quot;86&quot; src=&quot;https://mu
-    
-    </summary>
-    
-      <category term="生活" scheme="jokewang.top/categories/life/"/>
-    
-    
-      <category term="音乐" scheme="jokewang.top/tags/%E9%9F%B3%E4%B9%90/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>红花ノ乙女呗</title>
-    <link href="jokewang.top/2016/07/13/%E7%BA%A2%E8%8A%B1%E3%83%8E%E4%B9%99%E5%A5%B3%E5%91%97/"/>
-    <id>jokewang.top/2016/07/13/红花ノ乙女呗/</id>
-    <published>2016-07-13T09:41:30.000Z</published>
-    <updated>2016-07-18T01:05:21.000Z</updated>
-    
-    <content type="html">&lt;p&gt;吾是花儿么？是蝶抑或是鬼？&lt;/p&gt;
-&lt;iframe frameborder=&quot;no&quot; border=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; width=&quot;330&quot; height=&quot;86&quot; src=&quot;https://music.163.com/outchain/player?type=2&amp;id=4929317&amp;auto=0&amp;height=66&quot;&gt;&lt;/iframe&gt;</content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;吾是花儿么？是蝶抑或是鬼？&lt;/p&gt;
-&lt;iframe frameborder=&quot;no&quot; border=&quot;0&quot; marginwidth=&quot;0&quot; marginheight=&quot;0&quot; width=&quot;330&quot; height=&quot;86&quot; src=&quot;https://music.163.com
     
     </summary>
     
